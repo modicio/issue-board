@@ -1,0 +1,39 @@
+name: Scala CI
+
+on:
+  push:
+    branches: 
+      - main
+      - modicio-latest
+
+permissions:
+  contents: read
+
+jobs:
+  build_and_publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: 'sbt'
+    - name: Run tests
+      run: sbt test
+    - name: build dist
+      run: sbt dist
+    - name: upload dist
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: target/universal/modicio-insights-0.1.zip
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v3.0.0
+      with:
+        name: dist
+        path: build_package
+        
