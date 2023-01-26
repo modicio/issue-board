@@ -1,0 +1,57 @@
+{
+  "model": [
+    {
+      "name": "#:Issue",
+      "template": true,
+      "childOf": [
+        ":#:ROOT"
+      ],
+      "associations": [],
+      "attributes": [
+        ":Title:STRING:true"
+      ],
+      "values": []
+    },
+    {
+      "name": "#:Milestone",
+      "template": false,
+      "childOf": [
+        ":#:ROOT"
+      ],
+      "associations": [
+        ":solves:Issue:*:>0"
+      ],
+      "attributes": [
+        ":Title:STRING:true",
+        ":Deadline:DATETIME:false"
+      ],
+      "values": []
+    },
+    {
+      "name": "#:FeatureRequest",
+      "template": false,
+      "childOf": [
+        ":#:Issue"
+      ],
+      "associations": [],
+      "attributes": [
+        ":Feature Description:STRING:true"
+      ],
+      "values": []
+    },
+    {
+      "name": "#:Bug",
+      "template": false,
+      "childOf": [
+        ":#:Issue"
+      ],
+      "associations": [],
+      "attributes": [
+        ":Report:STRING:true",
+        ":Log:STRING:false",
+        ":Product Version:STRING:false"
+      ],
+      "values": []
+    }
+  ]
+}

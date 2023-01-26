@@ -1,0 +1,83 @@
+@*
+* This file is part of the "issue board" modicio case study software.
+* Copyright (C) 2022 Karl Kegel
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+* *@
+@import views.html.helper.CSRF
+@import modicio.core.TypeHandle
+@import modicio.core.DeepInstance
+@(referenceTypes: Seq[TypeHandle], extraTypes: Seq[String], selected: String, selection: Seq[DeepInstance])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+
+@app {
+
+    <div class="flex-container">
+        <div class="p-ltrb-mini"><b>Filter Issue By Type</b></div>
+        @for(handle <- referenceTypes) {
+            @if(handle.getTypeName == selected) {
+                <div class="m-r-small"><a href="@routes.IssueController.index(handle.getTypeName)"><button class="btn btn-solid-prim p-l-small p-r-small">@handle.getTypeName</button></a></div>
+            } else {
+                <div class="m-r-small"><a href="@routes.IssueController.index(handle.getTypeName)"><button class="btn btn-solid-sec p-l-small p-r-small">@handle.getTypeName</button></a></div>
+            }
+        }
+        @for(otherName <- extraTypes) {
+            @if(otherName == selected) {
+                <div class="m-r-small"><a href="@routes.IssueController.index(otherName)"><button class="btn btn-bordered-prim p-l-small p-r-small">@otherName</button></a></div>
+            } else {
+                <div class="m-r-small"><a href="@routes.IssueController.index(otherName)"><button class="btn btn-bordered-sec p-l-small p-r-small">@otherName</button></a></div>
+            }
+        }
+    </div>
+
+    <div class="full-width flex-container vertical centered">
+    @if(selection.nonEmpty) {
+
+
+        @for(instance <- selection) {
+            <div class="col-7 card shadowed m-b-small m-t-medium">
+                <div class="p-t-small p-b-small p-r-medium p-l-medium flex-container full-width vertical">
+
+                    <div class="flex-container full-width stretched horizontal m-t-mini">
+                        <div class="m-r-mini bg-lg p-l-mini p-r-mini">@instance.getTypeHandle.getTypeName</div>
+                        <div class="weight-2"><b>@instance.deepValue("Title").getOrElse("[untitled]")</b></div>
+                        <div class="m-l-small m-r-mini input-medium">@instance.getTypeHandle.getTypeIdentity.takeRight(5)</div>
+                    </div>
+
+                    <div class="flex-container full-width stretched horizontal m-t-small">
+                        <div class="m-r-small"><a href='@routes.IssueController.getIssue(instance.getTypeHandle.getTypeName, instance.getInstanceId)'><button class="btn btn-solid-sec btn-small">Open</button></a></div>
+                        @helper.form(action = routes.IssueController.deleteIssue(selected, instance.getInstanceId)) {
+                            @CSRF.formField
+                            <button class="btn btn-bordered-prim btn-small">Delete</button>
+                        }
+                    </div>
+
+                </div>
+            </div>
+
+        }
+
+
+}
+    </div>
+
+    @if(!selected.isBlank && !extraTypes.contains(selected) && !referenceTypes.find(_.getTypeName == selected).get.getIsTemplate) {
+        <div class="m-t-medium">
+        @helper.form(action = routes.IssueController.addIssue(selected)) {
+            @CSRF.formField
+            <button class="btn btn-medium btn-bordered-sec">New Instance</button>
+        }
+        </div>
+    }
+
+}("Issue Board")

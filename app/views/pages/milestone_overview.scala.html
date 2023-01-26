@@ -1,0 +1,54 @@
+@*
+* This file is part of the "issue board" modicio case study software.
+* Copyright (C) 2022 Karl Kegel
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+* *@
+@import views.html.helper.CSRF
+@import modicio.core.DeepInstance
+@(selection: Seq[DeepInstance])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+
+@app {
+
+    <div class="full-width flex-container vertical centered">
+        <div class="col-7 card shadowed m-b-small m-t-medium">
+            <div class="p-t-small p-b-small p-r-medium p-l-medium">
+                <div class="headline-text m-b-small"><b>Milestones</b></div>
+                <div class="flex-container full-width stretched horizontal m-b-mini bg-sec fc-white p-t-mini p-b-mini">
+                    <div class="m-l-small m-r-small input-medium">Key</div>
+                    <div class="weight-2"><b>Title</b></div>
+                    <div class="m-l-medium m-r-small">Action</div>
+                </div>
+                @for(instance <- selection) {
+                    <div class="flex-container full-width stretched horizontal m-t-mini p-t-mini p-b-mini bg-lg">
+                        <div class="m-l-small m-r-small input-medium">@instance.getTypeHandle.getTypeIdentity.takeRight(5)</div>
+                        <div class="weight-2"><b>@instance.deepValue("Title").getOrElse("[untitled]")</b></div>
+                        <div class=" m-l-small m-r-small"><a href='@routes.MilestoneController.getMilestone(instance.getInstanceId)'>open</a></div>
+                        @helper.form(action = routes.MilestoneController.deleteMilestone(instance.getInstanceId)) {
+                            @CSRF.formField
+                            <button class="btn btn-bordered-prim btn-small  m-r-mini">Delete</button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+</div>
+
+<div class="m-t-medium">
+@helper.form(action = routes.MilestoneController.addMilestone()) {
+    @CSRF.formField
+    <button class="btn btn-medium btn-bordered-sec">New Milestone</button>
+}
+</div>
+    }("Issue Board :: Milestones")

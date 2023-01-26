@@ -1,0 +1,69 @@
+# This file is part of the "issue board" modicio case study software.
+# Copyright (C) 2022 Karl Kegel
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# Routes
+
+# serve all files from the public folder
+GET         /assets/*file                                            controllers.Assets.versioned(path="/public", file: Asset)
+
+
+# Redirect to model/
+GET         /                                                        controllers.ApplicationController.index()
+
+# Show all available Fragments grouped by template/instaciable
+GET         /model                                                   controllers.ModelController.index()
+
+# Show the details and rules of a specific Fragment
+GET         /model/fragment/:name                                    controllers.ModelController.fragment(name: String, identity: String)
+
+POST        /model/fragment/:name/delete                             controllers.ModelController.deleteFragment(name: String, identity: String)
+
+# Add a new Fragment with some predefined values but EMPTY RULESETS
+POST        /model/fragment                                          controllers.ModelController.addModelElement()
+
+POST        /model/variant                                           controllers.ModelController.incrementVariant()
+POST        /model/commit                                            controllers.ModelController.commit()
+POST        /model/exchange                                          controllers.ModelController.exchangeModel()
+
+# Add a new rule to the HEAD fragment
+POST        /model/fragment/:name/rules/childOf_new                  controllers.ModelController.addExtensionRule(name: String, identity: String)
+POST        /model/fragment/:name/rules/link_new                     controllers.ModelController.addLinkRule(name: String, identity: String)
+POST        /model/fragment/:name/rules/attribute_new                controllers.ModelController.addAttributeRule(name: String, identity: String)
+POST        /model/fragment/:name/rules/value_new                    controllers.ModelController.addConcreteValueRule(name: String, identity: String)
+
+POST        /model/fragment/:name/rules/:ruleId/slot_new             controllers.ModelController.addSlot(name: String, identity: String, ruleId: String)
+POST        /model/fragment/:name/rules/:ruleId/slot_delete          controllers.ModelController.removeSlot(name: String, identity: String, ruleId: String, variantTimeArg: String)
+
+# Delete a rule from the HEAD fragment
+POST        /model/fragment/:name/rules/:ruleId/delete               controllers.ModelController.removeRule(name: String, identity: String, ruleId: String)
+
+
+
+GET         /issues                                                  controllers.IssueController.index(selection: String)
+GET         /milestones                                              controllers.MilestoneController.index()
+
+POST        /issues/:selection                                       controllers.IssueController.addIssue(selection: String)
+GET         /issues/:selection/:instanceId                           controllers.IssueController.getIssue(selection: String, instanceId: String)
+POST        /issues/:selection/:instanceId/delete                    controllers.IssueController.deleteIssue(selection: String, instanceId: String)
+POST        /issues/:selection/:instanceId/:attributeName            controllers.IssueController.updateAttribute(selection: String, instanceId: String, attributeName: String)
+POST        /issues/:selection/:instanceId                           controllers.IssueController.addAssociation(selection: String, instanceId: String, relation: String)
+
+
+POST        /milestones/                                  controllers.MilestoneController.addMilestone()
+GET         /milestones/:instanceId                       controllers.MilestoneController.getMilestone(instanceId: String)
+POST        /milestones/:instanceId/delete                controllers.MilestoneController.deleteMilestone(instanceId: String)
+POST        /milestones/:instanceId/:attributeName        controllers.MilestoneController.updateAttribute(instanceId: String, attributeName: String)
+POST        /milestones/:instanceId                       controllers.MilestoneController.addAssociation(instanceId: String, relation: String)

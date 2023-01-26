@@ -1,0 +1,206 @@
+/*
+ * This file is part of the flimey-core software.
+ * Copyright (C) 2020-2021 Julia Kegel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * */
+
+.float-top-right {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.align-horizontal{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.no-padding{
+    padding: 0 !important;
+}
+
+.float-center{
+    position: absolute;
+    top: 45%;
+    left: 48%;
+    transform: translate3d(-50%,-50%, 0);
+    z-index: 2;
+}
+
+.m-ltrb-mini {
+    margin: var(--distance-mini);
+}
+
+.m-ltrb-small {
+    margin: var(--distance-small);
+}
+
+.m-ltrb-medium {
+    margin: var(--distance-medium);
+}
+
+.m-ltrb-large {
+    margin: var(--distance-large);
+}
+
+.m-l-mini {
+    margin-left: var(--distance-mini);
+}
+
+.m-l-small {
+    margin-left: var(--distance-small);
+}
+
+.m-l-medium {
+    margin-left: var(--distance-medium);
+}
+
+.m-l-large {
+    margin-left: var(--distance-large);
+}
+
+.m-r-mini {
+    margin-right: var(--distance-mini);
+}
+
+.m-r-small {
+    margin-right: var(--distance-small);
+}
+
+.m-r-medium {
+    margin-right: var(--distance-medium);
+}
+
+.m-r-large {
+    margin-right: var(--distance-large);
+}
+
+.m-t-mini {
+    margin-top: var(--distance-mini);
+}
+
+.m-t-small {
+    margin-top: var(--distance-small);
+}
+
+.m-t-medium {
+    margin-top: var(--distance-medium);
+}
+
+.m-t-large {
+    margin-top: var(--distance-large);
+}
+
+.m-b-mini {
+    margin-bottom: var(--distance-mini);
+}
+
+.m-b-small {
+    margin-bottom: var(--distance-small);
+}
+
+.m-b-medium {
+    margin-bottom: var(--distance-medium);
+}
+
+.m-b-large {
+    margin-bottom: var(--distance-large);
+}
+
+.p-ltrb-mini {
+    padding: var(--distance-mini);
+}
+
+.p-ltrb-small {
+    padding: var(--distance-small);
+}
+
+.p-ltrb-medium {
+    padding: var(--distance-medium);
+}
+
+.p-ltrb-large {
+    padding: var(--distance-large);
+}
+
+.p-l-mini {
+    padding-left: var(--distance-mini);
+}
+
+.p-l-small {
+    padding-left: var(--distance-small);
+}
+
+.p-l-medium {
+    padding-left: var(--distance-medium);
+}
+
+.p-l-large {
+    padding-left: var(--distance-large);
+}
+
+.p-r-mini {
+    padding-right: var(--distance-mini);
+}
+
+.p-r-small {
+    padding-right: var(--distance-small);
+}
+
+.p-r-medium {
+    padding-right: var(--distance-medium);
+}
+
+.p-r-large {
+    padding-right: var(--distance-large);
+}
+
+.p-t-mini {
+    padding-top: var(--distance-mini);
+}
+
+.p-t-small {
+    padding-top: var(--distance-small);
+}
+
+.p-t-medium {
+    padding-top: var(--distance-medium);
+}
+
+.p-t-large {
+    padding-top: var(--distance-large);
+}
+
+.p-b-mini {
+    padding-bottom: var(--distance-mini);
+}
+
+.p-b-small {
+    padding-bottom: var(--distance-small);
+}
+
+.p-b-medium {
+    padding-bottom: var(--distance-medium);
+}
+
+.p-b-large {
+    padding-bottom: var(--distance-large);
+}

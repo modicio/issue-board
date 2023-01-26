@@ -1,0 +1,44 @@
+@*
+* This file is part of the "issue board" modicio case study software.
+* Copyright (C) 2022 Karl Kegel
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+* *@
+@import modicio.core.rules.AssociationRule
+@import modicio.core.TimeIdentity
+@import views.html.helper.CSRF
+@import modicio.core.rules.Slot
+@(rule: AssociationRule, fragmentName: String, identity: String)(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+<div>
+    <div class="flex-container">
+        <div class="weight-2 flex-container">
+            <div class="bg-sec fc-white p-ltrb-mini">Relation Name: @rule.associationName</div>
+            <div class="m-l-mini bg-sec fc-white p-ltrb-mini">Target Class: @rule.targetName</div>
+            <div class="m-l-mini bg-sec fc-white p-ltrb-mini">Multiplicity: @rule.multiplicity</div>
+            <div class="m-l-mini bg-prim p-ltrb-mini"><a class="fc-white" href='@routes.ModelController.fragment(rule.targetName, "#")'>Open</a></div>
+        </div>
+    </div>
+    @for(slot <- rule.getInterface.getSlots){
+        <div class="flex-container m-t-mini">
+            <div class="bg-sec fc-white p-ltrb-mini"> [SLOT] @rule.targetName</div>
+            <div class="bg-prim fc-white p-ltrb-mini"> @Slot.parsePrefix(slot) @TimeIdentity.prettyPrintExtended(Slot.parseTimeArg(slot))</div>
+            <div class="m-l-mini">
+                @helper.form(action = routes.ModelController.removeSlot(fragmentName, identity, rule.id, slot.targetVariantTimeArg)) {
+                    @CSRF.formField
+                    <button class="btn btn-bordered-prim btn-small">Delete</button>
+                }
+            </div>
+        </div>
+    }
+</div>

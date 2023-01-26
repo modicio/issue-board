@@ -1,0 +1,58 @@
+@*
+* This file is part of the "issue board" modicio case study software.
+* Copyright (C) 2022 Karl Kegel
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+* *@
+
+@(content: Html = Html(""))(headline: String)
+
+<style>
+    .main {
+        width: 90%;
+        margin-top: 1vh;
+    }
+
+    .nav-link {
+        text-align: right;
+    }
+
+    .headline {
+        font-weight: bold;
+    }
+</style>
+    @main {
+        <div class="main" role="presentation">
+            <div class="flex-container vertical full-width" role="presentation">
+                <div class="flex-container horizontal full-width left-align" role="presentation">
+                    <div class="col-2" role="presentation"></div>
+                    <div class="card shadowed p-l-small p-r-small" role="presentation">
+                        <h3>@headline</h3>
+                    </div>
+                </div>
+                <div class="flex-container horizontal full-width left-align m-t-small" role="presentation">
+                    <div class="col-2" role="presentation">
+                        <div role="menu" class="flex-container vertical right-align full-width">
+                            <a role="menuitem" class="m-r-small nav-link" href='@routes.IssueController.index("")'><button class="btn btn-solid-sec btn-shadowed p-l-mini - p-r-mini">Issue Board</button></a>
+                            <a role="menuitem" class="m-r-small m-t-mini nav-link" href='@routes.MilestoneController.index()'><button class="btn btn-solid-sec btn-shadowed p-l-mini - p-r-mini">Milestones</button></a>
+                            <a role="menuitem" class="m-r-small m-t-mini nav-link" href="@routes.ModelController.index()"><button class="btn btn-bordered-sec btn-shadowed p-l-mini - p-r-mini">Admin Area</button></a>
+                        </div>
+                    </div>
+                    <div role="main" class="col-7 card p-ltrb-small shadowed">
+                    @content
+                    </div>
+                </div>
+            </div>
+        </div>
+    }

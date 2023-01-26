@@ -1,0 +1,146 @@
+/*
+ * This file is part of the flimey-core software.
+ * Copyright (C) 2020-2021 Karl Kegel
+ * Copyright (C) 2020 Julia Kegel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * */
+
+:root {
+    --color-prim: #d81b60;
+    --color-prim-light: #ff5c8d;
+    --color-prim-dark: #a00037;
+
+    --color-sec: #311b92;
+    --color-sec-light: #6746c3;
+    --color-sec-dark: #000063;
+
+    --color-positive: #66bb6a;
+    --color-warn: #dba02a;
+    --color-error: #b71c1c;
+
+    --color-maintain: #d66947;
+    --color-edit: #ff8a65;
+    --color-view: #ffbb93;
+
+    --color-background: #fafafa;
+}
+
+.fc-prim {
+    color: var(--color-prim);
+}
+
+.fc-prim-light {
+    color: var(--color-prim-light);
+}
+
+.fc-prim-dark {
+    color: var(--color-prim-dark);
+}
+
+.fc-sec {
+    color: var(--color-sec);
+}
+
+.fc-sec-light {
+    color: var(--color-sec-light);
+}
+
+.fc-sec-dark {
+    color: var(--color-sec-dark);
+}
+
+.fc-positive {
+    color: var(--color-positive);
+}
+
+.fc-warn {
+    color: var(--color-warn);
+}
+
+.fc-error {
+    color: var(--color-error);
+}
+
+.fc-white {
+    color: white;
+}
+
+.fc-black {
+    color: black;
+}
+
+.bg-prim {
+    background-color: var(--color-prim);
+}
+
+.bg-prim-light {
+    background-color: var(--color-prim-light);
+}
+
+.bg-prim-dark {
+    background-color: var(--color-prim-dark);
+}
+
+.bg-sec {
+    background-color: var(--color-sec);
+}
+
+.bg-sec-light {
+    background-color: var(--color-sec-light);
+}
+
+.bg-sec-dark {
+    background-color: var(--color-sec-dark);
+}
+
+.bg-positive {
+    background-color: var(--color-positive);
+}
+
+.bg-warn {
+    background-color: var(--color-warn);
+}
+
+.bg-error {
+    background-color: var(--color-error);
+}
+
+.bg-maintain {
+    background-color: var(--color-maintain);
+}
+
+.bg-edit {
+    background-color: var(--color-edit);
+}
+
+.bg-view {
+    background-color: var(--color-view);
+}
+
+.bg-lg {
+    background-color: #eeeeee;
+}
+
+.bg-block-1 {
+    background-color: #efefef;
+}
+
+.bg-block-2 {
+    background-color: #87c1e6;
+}
+
+.bg-block-3 {
+    background-color: #3f9ad4;
+}
