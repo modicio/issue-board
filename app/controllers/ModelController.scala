@@ -79,33 +79,36 @@ class ModelController @Inject()(cc: ControllerComponents, modelService: ModelSer
     })
   }
 
-  def deleteFragment(name: String, identity: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+  def deleteClass(name: String, identity: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     RegistryProvider.getRegistry flatMap (registry => {
-      if (name != ModelElement.ROOT_NAME && name != "Issue" && name != "Milestone") {
-        registry.autoRemove(name, identity) map (_ => Redirect(routes.ModelController.index()))
+      if (name != ModelElement.ROOT_NAME &&
+        name != "Issue" &&
+        name != "Milestone") {
+        registry.autoRemove(name, identity) map (_ =>
+          Redirect(routes.ModelController.index()))
       } else {
         Future.successful(Redirect(routes.ModelController.index()))
       }
     })
   }
 
-  def addModelElement(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    NewFragmentForm.form.bindFromRequest fold(
+  def addClass(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    NewClassForm.form.bindFromRequest fold(
       _ => {
         Future.successful(Redirect(routes.ModelController.index()))
       },
       data => {
         RegistryProvider.getRegistry flatMap (registry => {
           val typeFactory = RegistryProvider.typeFactory
-          val typeName = data.fragmentName
-          val isTemplate = data.fragmentType == "TEMPLATE"
+          val typeName = data.className
+          val isTemplate = data.classType == "TEMPLATE"
           typeFactory.newType(typeName, ModelElement.REFERENCE_IDENTITY, isTemplate) flatMap (newType =>
             registry.setType(newType) map (_ => Redirect(routes.ModelController.fragment(typeName, ModelElement.REFERENCE_IDENTITY))))
         })
       })
   }
 
-  def addExtensionRule(name: String, identity: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+def addExtensionRule(name: String, identity: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     NewExtensionRuleForm.form.bindFromRequest fold(
       _ => {
         Future.successful(Redirect(routes.ModelController.fragment(name, identity)))
@@ -118,7 +121,7 @@ class ModelController @Inject()(cc: ControllerComponents, modelService: ModelSer
           RegistryProvider.getRegistry flatMap (registry => {
             registry.getType(name, identity) flatMap (typeOption => {
               typeOption.get.unfold() flatMap (typeHandle => {
-                if(data.parent != "Milestone") {
+                if (data.parent != "Milestone") {
                   val newRule = ParentRelationRule.create(data.parent, ModelElement.REFERENCE_IDENTITY)
                   if (newRule.verify()) {
                     typeHandle.applyRule(newRule)

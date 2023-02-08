@@ -21,9 +21,9 @@ package modules.model.formdata
 import play.api.data.Forms._
 import play.api.data._
 
-object NewFragmentForm {
+object NewClassForm {
 
-  case class Data(fragmentName: String, fragmentType: String)
+  case class Data(className: String, classType: String)
 
   val form: Form[Data] = Form(
     mapping(

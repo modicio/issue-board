@@ -29,10 +29,10 @@ GET         /model                                                   controllers
 # Show the details and rules of a specific Fragment
 GET         /model/fragment/:name                                    controllers.ModelController.fragment(name: String, identity: String)
 
-POST        /model/fragment/:name/delete                             controllers.ModelController.deleteFragment(name: String, identity: String)
+POST        /model/fragment/:name/delete                             controllers.ModelController.deleteClass(name: String, id: String)
 
 # Add a new Fragment with some predefined values but EMPTY RULESETS
-POST        /model/fragment                                          controllers.ModelController.addModelElement()
+POST        /model/fragment                                          controllers.ModelController.addClass()
 
 POST        /model/variant                                           controllers.ModelController.incrementVariant()
 POST        /model/commit                                            controllers.ModelController.commit()

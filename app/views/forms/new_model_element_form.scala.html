@@ -19,7 +19,7 @@
 
 @()(implicit request: RequestHeader, messagesProvider: MessagesProvider)
 
-@helper.form(action = routes.ModelController.addModelElement()) {
+@helper.form(action = routes.ModelController.addClass()) {
     @CSRF.formField
     <div class="flex-container vertical">
         <div class="flex-container horizontal">

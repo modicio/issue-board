@@ -145,7 +145,7 @@
                         <div class="m-l-small col-2">@handle.getTypeName</div>
                         <div class="weight-2"><b>[REFERENCE (#)]</b></div>
                         <div class="widget-large m-l-small m-r-small"><a href='@routes.ModelController.fragment(handle.getTypeName, "#")'>open</a></div>
-                        @helper.form(action = routes.ModelController.deleteFragment(handle.getTypeName, handle.getTypeIdentity)) {
+                        @helper.form(action = routes.ModelController.deleteClass(handle.getTypeName, handle.getTypeIdentity)) {
                             @CSRF.formField
                             <button class="btn btn-bordered-prim btn-small m-l-small m-r-mini">Delete</button>
                         }
@@ -167,7 +167,7 @@
                     <div class="m-l-small col-2">@handle.getTypeName</div>
                     <div class="weight-2"><b>[REFERENCE (#)]</b></div>
                     <div class="widget-large m-l-small m-r-small"><a href='@routes.ModelController.fragment(handle.getTypeName, "#")'>open</a></div>
-                    @helper.form(action = routes.ModelController.deleteFragment(handle.getTypeName, handle.getTypeIdentity)) {
+                    @helper.form(action = routes.ModelController.deleteClass(handle.getTypeName, handle.getTypeIdentity)) {
                         @CSRF.formField
                         <button class="btn btn-bordered-prim btn-small m-l-small m-r-mini">Delete</button>
                     }
