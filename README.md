@@ -21,7 +21,7 @@ This case-study is not guaranteed to be compatible with the nwest modicio versio
 The CI pipeline of this repository creates a dist package with a runnable bash script. You can download the package by clicking on the latest CI run. 
 * Unpack the ZIP
 * Place the resources folder of this repos inside the bin folder
-* Execute the modicio-native bash file inside bin on your terminal. 
+* Execute the issue-board bash file inside bin on your terminal. 
 
 After some time, the web-app is available on localhost:9000 (or different port, check the terminal output).
 
