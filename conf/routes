@@ -26,6 +26,9 @@ GET         /                                                        controllers
 # Show all available Fragments grouped by template/instaciable
 GET         /model                                                   controllers.ModelController.index()
 
+# Show all classes and instances
+GET         /monitoring                                                   controllers.MonitoringController.index()
+
 # Show the details and rules of a specific Fragment
 GET         /model/fragment/:name                                    controllers.ModelController.fragment(name: String, identity: String)
 
