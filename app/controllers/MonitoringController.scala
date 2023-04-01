@@ -18,17 +18,17 @@
 
 package controllers
 
-import env.{RegistryProvider, VirtualFileSystem, VirtualRegistryExtension}
-import modules.instances.service.InstanceService
-import modules.model.service.ModelService
+import env.RegistryProvider
+import modicio.core.monitoring.Monitoring
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Singleton
-class ModelController @Inject()(cc: ControllerComponents) extends
+class MonitoringController @Inject()(cc: ControllerComponents) extends
   AbstractController(cc) with I18nSupport with Logging {
   
   def index: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
@@ -37,9 +37,18 @@ class ModelController @Inject()(cc: ControllerComponents) extends
       references <- registry.getReferences
     } yield {
       
-      val allClasses = registry.produceJson()
-      
-      Ok(views.html.pages.monitoring(allClasses))
+      val monitoringData = registry match {
+        case e: Monitoring => registry.asInstanceOf[Monitoring].produceJson().toString()
+        case _ => ""
+
+      }
+
+      /*
+      You can also pass the "references" and do something with them, but I don't see a reason why you should...
+      Please look at the monitoring.scala.html, I added some code and hints for you.
+       */
+
+      Ok(views.html.pages.monitoring(monitoringData))
     }
   }
 

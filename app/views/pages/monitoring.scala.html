@@ -19,16 +19,34 @@
 @import modicio.core.TypeHandle
 @import modicio.core.DeepInstance
 @import modicio.core.monitoring.Class
-@(allClasses: Json)(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+@import io.circe.Json
+@(jsonContent: String)(implicit request: RequestHeader, messagesProvider: MessagesProvider)
 
 
 @app {
 
 <div class="flex-container">
     <div class="p-ltrb-mini"><b>Monitoring Board</b></div>
-    @for(c <- allClasses) {
-    <div class="m-r-small"><button class="btn btn-solid-prim p-l-small p-r-small">@c.typeName</button></a></div>
-    }
+
+    <div id="jsonMonitoring" hidden>
+        @jsonContent
+    </div>
+
+    <!-- You can do something with javascript here to render stuff-->
+
+        <script>
+            const monitoring = $("#jsonMonitoring")
+            const monitoringData = JSON.parse(monitoring.get(0).innerText)
+
+            //prints in the browser javascript console
+            console.log("monitoringData", monitoringData)
+        </script>
+
+    <br />
+    <div class="m-t-large">
+        Look in your Browser Console to see the data! ("Command + Option + K" on mac)
+    </div>
+
 </div>
 
 
