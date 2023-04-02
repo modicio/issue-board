@@ -85,21 +85,13 @@
                     .attr('width', width)
                     .attr('height', height)
 
-<!--                var force = d3.layout.force()-->
-<!--                    .size([width, height])-->
-<!--                    .nodes(d3.values(nodes))-->
-<!--                    .links(links)-->
-<!--                    .on("tick", tick)-->
-<!--                    .linkDistance(300)-->
-<!--                    .start()-->
-
-                var simulation = d3.forceSimulation(nodes)
-                  .force("link", d3.forceLink(links).id(d => d.id))
-                  .force("charge", d3.forceManyBody())
-                  .force("x", d3.forceX())
-                  .force("y", d3.forceY());
-
-
+                var force = d3.layout.force()
+                    .size([width, height])
+                    .nodes(d3.values(nodes))
+                    .links(links)
+                    .on("tick", tick)
+                    .linkDistance(300)
+                    .start()
 
                 var link = svg.selectAll('.link')
                     .data(links)
