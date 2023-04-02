@@ -22,32 +22,168 @@
 @import io.circe.Json
 @(jsonContent: String)(implicit request: RequestHeader, messagesProvider: MessagesProvider)
 
-
 @app {
 
-<div class="flex-container">
+<style>
+    .node {
+        stroke: #fff;
+        stroke-with: 2px;
+    }
+
+    .link {
+        stroke:#777;
+        stroke-width: 2px;
+    }
+</style>
+
+<body>
     <div class="p-ltrb-mini"><b>Monitoring Board</b></div>
+    <div class="flex-container">
 
-    <div id="jsonMonitoring" hidden>
-        @jsonContent
-    </div>
 
-    <!-- You can do something with javascript here to render stuff-->
+        <div id="jsonMonitoring" hidden>
+            @jsonContent
+        </div>
 
+        <br />
+        <div class="m-t-large" id="graph">
+<!--            Look in your Browser Console to see the data! ("Command + Option + K" on mac)-->
+        </div>
+
+        <!-- You can do something with javascript here to render stuff-->
+        <script src="https://d3js.org/d3.v3.min.js"></script>
         <script>
-            const monitoring = $("#jsonMonitoring")
-            const monitoringData = JSON.parse(monitoring.get(0).innerText)
 
-            //prints in the browser javascript console
-            console.log("monitoringData", monitoringData)
-        </script>
+                const monitoring = $("#jsonMonitoring")
+                const monitoringData = JSON.parse(monitoring.get(0).innerText)
 
-    <br />
-    <div class="m-t-large">
-        Look in your Browser Console to see the data! ("Command + Option + K" on mac)
+                //prints in the browser javascript console
+                console.log("monitoringData", monitoringData)
+
+                var width = 800,
+                    height = 650
+
+                var nodes = {}
+                var links = []
+
+                monitoringData.forEach(function(c) {
+                    typeName =nodes[c.typeName] ||
+                        (nodes[c.typeName] = { name: c.typeName, type: 'class'})
+                    c.variants.forEach(function(vs) {
+                        variant = nodes[c.typeName + vs.variantId] ||
+                            (nodes[c.typeName + vs.variantId] = { name: vs.variantId, type: 'variant'})
+                        links.push({source: typeName, target: variant})
+                        vs.versions.forEach(function(vi) {
+                            version = nodes[c.typeName + vi.versionId] ||
+                                (nodes[c.typeName + vi.versionId] = { name: vi.versionId, type: 'version', instances: vi.instances.length})
+                            links.push({source: variant, target: version})
+                        })
+                    })
+                })
+
+                var svg=d3.select("#graph").append('svg')
+                    .attr('width', width)
+                    .attr('height', height)
+
+<!--                var force = d3.layout.force()-->
+<!--                    .size([width, height])-->
+<!--                    .nodes(d3.values(nodes))-->
+<!--                    .links(links)-->
+<!--                    .on("tick", tick)-->
+<!--                    .linkDistance(300)-->
+<!--                    .start()-->
+
+                var simulation = d3.forceSimulation(nodes)
+                  .force("link", d3.forceLink(links).id(d => d.id))
+                  .force("charge", d3.forceManyBody())
+                  .force("x", d3.forceX())
+                  .force("y", d3.forceY());
+
+
+
+                var link = svg.selectAll('.link')
+                    .data(links)
+                    .enter().append('line')
+                    .attr('class', 'link')
+
+                var div = d3.select("#graph").append("div")
+                     .attr("class", "tooltip-donut")
+                     .style("opacity", 0)
+
+                var node = svg.selectAll('.node')
+                    .data(force.nodes())
+                    .enter().append('circle')
+                    .attr('class', 'node')
+                    .style('fill', function(node) {return color(node)})
+                    .attr('r', function(node) {return getSize(node)})
+                    .on('mouseover', function (d, i) {
+                          d3.select(this).transition()
+                               .duration('50')
+                               .attr('opacity', '.85')
+                          div.transition()
+                               .duration('50')
+                               .style("opacity", 1);
+                          div.html(getInformation(d))
+                               .style("left", (d3.event.pageX + 10) + "px")
+                               .style("top", (d3.event.pageY - 15) + "px")
+                    })
+                    .on('mouseout', function (d, i) {
+                          d3.select(this).transition()
+                               .duration('50')
+                               .attr('opacity', '1')
+                          div.transition()
+                               .duration('50')
+                               .style("opacity", 0)
+                    });
+
+                function color(node) {
+                    switch(node.type) {
+                      case 'class':
+                        return '#00008b'
+                        break;
+                      case 'variant':
+                        return '#6464ff'
+                        break;
+                      default:
+                        return '#dadaff'
+                    }
+                }
+
+                function getSize(node) {
+                    if (node.type == 'version') {
+                        return width * 0.02 * node.instances
+                    }else {
+                        return width * 0.02
+                    }
+                }
+
+                function getInformation(node) {
+                    var text = ''
+                    switch(node.type) {
+                      case 'class':
+                        text = 'typeName: ' + node.name
+                        break;
+                      case 'variant':
+                        text = 'variant: ' + node.name
+                        break;
+                      default:
+                        text = 'version: ' + node.name + ', instances: ' + node.instances
+                    }
+                    return text
+                }
+
+                function tick(e) {
+                    node.attr('cx', function(d) { return d.x; })
+                        .attr('cy', function(d) { return d.y; })
+                        .call(force.drag);
+                    link.attr('x1', function(d) { return d.source.x; })
+                        .attr('y1', function(d) { return d.source.y; })
+                        .attr('x2', function(d) { return d.target.x; })
+                        .attr('y2', function(d) { return d.target.y; })
+                }
+
+            </script>
+
     </div>
-
-</div>
-
-
+</body>
 }("Monitoring Board")

@@ -34,7 +34,6 @@ class MonitoringController @Inject()(cc: ControllerComponents) extends
   def index: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     for {
       registry <- RegistryProvider.getRegistry
-      references <- registry.getReferences
     } yield {
       
       val monitoringData = registry match {
