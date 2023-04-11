@@ -24,35 +24,74 @@
 
 @app {
 
-<style>
-    .node {
-        stroke: #fff;
-        stroke-with: 2px;
+<head>
+    <style>
+    #legend {
+        float: left;
+        height: 40px;
     }
-
-    .link {
-        stroke:#777;
-        stroke-width: 2px;
+    tr{
+        background-color: #311b92;
+        color: #ffffff;
     }
-</style>
+    td{
+        background-color: #eeeeee;
+        color: #000000;
+    }
+    </style>
+</head>
 
 <body>
     <div class="p-ltrb-mini"><b>Monitoring Board</b></div>
     <div class="flex-container">
 
-
         <div id="jsonMonitoring" hidden>
             @jsonContent
         </div>
 
+
         <br />
-        <div class="m-t-large" id="graph">
-<!--            Look in your Browser Console to see the data! ("Command + Option + K" on mac)-->
+        <div>
+            <select class="col-6" onclick="showData()" id="vis" value="graph" selected style="margin-left: 20">
+                <option value="graph">Graph</option>
+                <option value="table">Table</option>
+            </select>
+            <div id="graph">
+                <div id="legend"></div>
+                <div>
+                    <input id="targetNode" name="targetNode" type="text" style="margin-left: 20"/>
+                    <button class="btn btn-solid-prim btn-small btn-shadowed m-t-small" onclick="searchType()">Search</button>
+                </div>
+            </div>
+            <div id="table" style="display: none; margin-top: 20">
+                <div class="col-6">
+                    <input id="targetRow" name="targetRow" type="text" style="margin-left: 20" onkeyup="searchTable()"/>
+                </div>
+            </div>
         </div>
 
         <!-- You can do something with javascript here to render stuff-->
-        <script src="https://d3js.org/d3.v3.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/d3-dispatch@@3"></script>
+        <script src="https://cdn.jsdelivr.net/npm/d3-quadtree@@3"></script>
+        <script src="https://cdn.jsdelivr.net/npm/d3-timer@@3"></script>
+        <script src="https://cdn.jsdelivr.net/npm/d3-force@@3"></script>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+
         <script>
+
+                function showData() {
+                  var vis = document.getElementById("vis").value
+                  var graph = document.getElementById("graph")
+                  var table = document.getElementById("table")
+                  if (vis == "graph") {
+                    graph.style.display = "block"
+                    table.style.display = "none"
+                  } else {
+                    table.style.display = "block"
+                    graph.style.display = "none"
+                  }
+                }
 
                 const monitoring = $("#jsonMonitoring")
                 const monitoringData = JSON.parse(monitoring.get(0).innerText)
@@ -60,58 +99,99 @@
                 //prints in the browser javascript console
                 console.log("monitoringData", monitoringData)
 
-                var width = 800,
+                const width = 800,
                     height = 650
 
-                var nodes = {}
-                var links = []
+                const nodes = []
+                const links = []
 
                 monitoringData.forEach(function(c) {
-                    typeName =nodes[c.typeName] ||
-                        (nodes[c.typeName] = { name: c.typeName, type: 'class'})
+                    newTypeName = nodes.push({ name: c.typeName, type: 'class', typeName: c.typeName})
+                    typeName = nodes.at(newTypeName-1)
                     c.variants.forEach(function(vs) {
-                        variant = nodes[c.typeName + vs.variantId] ||
-                            (nodes[c.typeName + vs.variantId] = { name: vs.variantId, type: 'variant'})
-                        links.push({source: typeName, target: variant})
+                        newVariant = nodes.push({ name: vs.variantId, type: 'variant', typeName: c.typeName})
+                        variant = nodes.at(newVariant-1)
+                        links.push({source: typeName, target: variant, type: 'none'})
                         vs.versions.forEach(function(vi) {
-                            version = nodes[c.typeName + vi.versionId] ||
-                                (nodes[c.typeName + vi.versionId] = { name: vi.versionId, type: 'version', instances: vi.instances.length})
-                            links.push({source: variant, target: version})
+                            newVersion = nodes.push({ name: vi.versionId, type: 'version', instances: vi.instances.length, typeName: c.typeName})
+                            version = nodes.at(newVersion-1)
+                            links.push({source: variant, target: version, type: 'none'})
                         })
                     })
                 })
 
-                var svg=d3.select("#graph").append('svg')
+                monitoringData.forEach(function(c) {
+                    c.variants.forEach(function(vs) {
+                        vs.versions.forEach(function(vi) {
+                            version = nodes.find((e) => e.name == vi.versionId && e.typeName == c.typeName)
+                            if (vi.parentRelations != undefined) {
+                                vi.parentRelations.forEach(d => {
+                                    parent = nodes.find(c => c.name === d[0])
+                                    newRelation = {source: version, target: parent, type: 'parentRelations'}
+                                    if (!links.find(link => link === newRelation) && newRelation !== undefined) {
+                                       links.push(newRelation)
+                                    }
+                                })
+                            }
+                            if (vi.associations !== undefined){
+                                vi.associations.forEach(d => {
+                                    version2 = nodes.find(e => e.name === d[2] && e.typeName === d[0])
+                                    console.log("version2:", version2)
+                                    if (version2 !== undefined) {
+                                        links.push({source: version, target: version2, type: 'associations'})
+                                    }
+                                })
+                            }
+                        })
+                    })
+                })
+
+                const svg = d3.select("#graph").append('svg')
                     .attr('width', width)
                     .attr('height', height)
 
-                var force = d3.layout.force()
-                    .size([width, height])
-                    .nodes(d3.values(nodes))
-                    .links(links)
-                    .on("tick", tick)
-                    .linkDistance(300)
-                    .start()
+                const simulation = d3.forceSimulation(nodes)
+                    .force("links", d3.forceLink(links).distance(40).strength(function(link) {
+                      if (link.source.typeName == link.source.typeName) {
+                        return 1;
+                      }
+                      else {
+                        return 0.1;
+                      }
+                    }))
+                    .force("x", d3.forceX(width / 2))
+                    .force("y", d3.forceY(height / 2))
+                    .force("charge", d3.forceManyBody())
+                    .force("collide", d3.forceCollide().radius(node => getSize(node)+3))
+                    .on("tick", ticked)
 
-                var link = svg.selectAll('.link')
+                const link = svg.selectAll('.link')
                     .data(links)
                     .enter().append('line')
                     .attr('class', 'link')
+                    .style('stroke', function(link) {return getColorForLinks(link)})
+                    .style('stroke-width', 3)
+                    .style("stroke-dasharray", function(link) {
+                        if (link.type == "associations") {
+                            return 5
+                        }else { return 0 }
+                    })
 
-                var div = d3.select("#graph").append("div")
+                const div = d3.select("#graph").append("div")
                      .attr("class", "tooltip-donut")
                      .style("opacity", 0)
 
-                var node = svg.selectAll('.node')
-                    .data(force.nodes())
+                const node = svg.selectAll('.nodes')
+                    .data(nodes)
                     .enter().append('circle')
                     .attr('class', 'node')
-                    .style('fill', function(node) {return color(node)})
+                    .style('fill', function(node) {return getColorForNodes(node)})
                     .attr('r', function(node) {return getSize(node)})
                     .on('mouseover', function (d, i) {
                           d3.select(this).transition()
                                .duration('50')
-                               .attr('opacity', '.85')
+                          svg.selectAll('circle')
+                               .attr('opacity', function(node) {return getOpacityForNodes(node, d)})
                           div.transition()
                                .duration('50')
                                .style("opacity", 1);
@@ -126,26 +206,53 @@
                           div.transition()
                                .duration('50')
                                .style("opacity", 0)
-                    });
+                          svg.selectAll('circle')
+                               .attr('opacity', 1)
+                    }).call(d3.drag()
+                          .on("start", dragstarted)
+                          .on("drag", dragged)
+                          .on("end", dragended)
+                    );
 
-                function color(node) {
+
+                function getOpacityForNodes(node, d) {
+                    if (node.typeName == d.typeName) {
+                        return 1
+                    }
+                    return 0.3
+                }
+
+                function getColorForNodes(node) {
                     switch(node.type) {
-                      case 'class':
-                        return '#00008b'
+                        case 'class':
+                        return '#0000a9'
                         break;
                       case 'variant':
-                        return '#6464ff'
+                        return '#4242ff'
                         break;
                       default:
-                        return '#dadaff'
+                        return '#8e8eff'
+                    }
+                }
+
+                function getColorForLinks(link) {
+                    switch(link.type) {
+                      case 'parentRelations':
+                        return '#FFA500'
+                        break;
+                      case 'associations':
+                        return '#FFA500'
+                        break;
+                      default:
+                        return '#777'
                     }
                 }
 
                 function getSize(node) {
                     if (node.type == 'version') {
-                        return width * 0.02 * node.instances
+                        return width * 0.4 * node.instances / nodes.length
                     }else {
-                        return width * 0.02
+                        return width * 0.4 / nodes.length
                     }
                 }
 
@@ -164,15 +271,168 @@
                     return text
                 }
 
-                function tick(e) {
+                function ticked(e) {
                     node.attr('cx', function(d) { return d.x; })
                         .attr('cy', function(d) { return d.y; })
-                        .call(force.drag);
                     link.attr('x1', function(d) { return d.source.x; })
                         .attr('y1', function(d) { return d.source.y; })
                         .attr('x2', function(d) { return d.target.x; })
                         .attr('y2', function(d) { return d.target.y; })
                 }
+
+                var svgLegend = d3.select("#legend").append("svg").attr("width", 600).attr("height", 100)
+
+                const nodesLegend = [{type: "class", cx: 30},{type: "variant", cx: 100}, {type: "version", cx: 180}]
+
+                svgLegend.selectAll('.nodes')
+                    .data(nodesLegend)
+                    .enter().append('circle')
+                    .attr('class', 'nodesLegend')
+                    .style('fill', function(node) {return getColorForNodes(node)})
+                    .attr('cx', function(node) {return node.cx})
+                    .attr('cy', 20)
+                    .attr('r', 10)
+
+                svgLegend.append('text')
+                  .attr('x', 40)
+                  .attr('y', 25)
+                  .style("font-size", 15)
+                  .text("Class")
+
+                svgLegend.append('text')
+                  .attr('x', 110)
+                  .attr('y', 25)
+                  .style("font-size", 15)
+                  .text("Variant")
+
+                svgLegend.append('text')
+                  .attr('x', 190)
+                  .attr('y', 25)
+                  .style("font-size", 15)
+                  .text("Version")
+
+                const linksLegend = [{type: "parent relations", x: 250}, {type: "associations", x: 450}]
+
+                svgLegend.selectAll('.links')
+                    .data(linksLegend)
+                    .enter().append('line')
+                    .style("stroke", "#FFA500")
+                    .style("stroke-width", 5)
+                    .attr("x1", function(link) {return link.x})
+                    .attr("x2", function(link) {return link.x + 50})
+                    .attr("y1", 20)
+                    .attr("y2", 20)
+                    .style("stroke-dasharray", function(link) {
+                        if (link.type == "associations") {
+                            return 5
+                        }else { return 0 }
+                    })
+
+                svgLegend.append('text')
+                    .attr('x', 310)
+                    .attr('y', 25)
+                    .style("font-size", 15)
+                    .text("Parent Relations")
+
+                svgLegend.append('text')
+                  .attr('x', 510)
+                  .attr('y', 25)
+                  .style("font-size", 15)
+                  .text("Associations")
+
+                function searchType(){
+                    var className = document.getElementById("targetNode").value
+                    var selectedNodes = d3.selectAll(".node")
+                                    .filter(function(d) { return d.typeName == className })
+                    var selectedLinked = d3.selectAll(".link")
+                                    .filter(function(d) { return d.source.typeName == className })
+                    d3.selectAll(".node").style("opacity","0.2")
+                    selectedNodes.style("opacity","1")
+                    selectedLinked.style("stroke-width", 5)
+                    if (className == "") {
+                        d3.selectAll(".node").style("opacity","1")
+                        d3.selectAll(".link").style("stroke-width", 3)
+                    }
+                }
+
+
+                var table = d3.select('#table').append('table').attr('id', 'monitoringTable')
+                    .style("margin-left", 20).style("margin-top", 20)
+                var thead = table.append("thead").append("tr");
+                        thead
+                            .selectAll("th")
+                            .data(["Class", "Variant", "Version", "Number of Instances"])
+                            .enter()
+                            .append("th")
+                            .text(function(d) { return d; })
+                var	tbody = table.append('tbody')
+                var dataForTable = []
+
+                monitoringData.forEach(function(c) {
+                    c.variants.forEach(function(vs) {
+                        vs.versions.forEach(function(vi) {
+                            dataForTable.push([c.typeName, vs.variantId, vi.versionId, vi.instances.length])
+                        })
+                    })
+                })
+
+                tabulate(dataForTable)
+
+                function tabulate(data) {
+                    var rows = tbody
+                       .selectAll("tr")
+                        .data(dataForTable)
+                       .enter()
+                       .append("tr")
+
+                    var cells = rows.selectAll('td')
+                      .data(function(row) {
+                        return row.map(function (column) {
+                          return {value: column};
+                        });
+                      })
+                      .enter()
+                      .append('td')
+                      .text(function (d) { return d.value; })
+
+                    return table
+                }
+
+                function searchTable(){
+                    var input = document.getElementById("targetRow")
+                        table = document.getElementById("monitoringTable")
+                        tr = table.getElementsByTagName("tr")
+                        filter = input.value.toUpperCase();
+
+                      for (i = 0; i < tr.length; i++) {
+                        td = tr[i].getElementsByTagName("td")[0]
+                        if (td) {
+                          txtValue = td.textContent || td.innerText;
+                          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                          } else {
+                            tr[i].style.display = "none";
+                          }
+                        }
+                      }
+                }
+
+              function dragstarted(d) {
+                 if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+                 d.fx = d.x;
+                 d.fy = d.y;
+              }
+
+              function dragged(d) {
+                 d.fx = d3.event.x;
+                 d.fy = d3.event.y;
+              }
+
+              function dragended(d) {
+                 if (!d3.event.active) simulation.alphaTarget(0);
+                 d.fx = null;
+                 d.fy = null;
+              }
 
             </script>
 
