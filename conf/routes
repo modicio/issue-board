@@ -27,7 +27,9 @@ GET         /                                                        controllers
 GET         /model                                                   controllers.ModelController.index()
 
 # Show all classes and instances
-GET         /monitoring                                                   controllers.MonitoringController.index()
+GET         /monitoring                                              controllers.MonitoringController.index()
+POST        /monitoring/deleteTime                                   controllers.MonitoringController.deleteKnowledgeTime()
+POST        /monitoring/deleteSize                                   controllers.MonitoringController.deleteKnowledgeSize()
 
 # Show the details and rules of a specific Fragment
 GET         /model/fragment/:name                                    controllers.ModelController.fragment(name: String, identity: String)

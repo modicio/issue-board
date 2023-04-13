@@ -15,7 +15,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 * *@
-@import views.html.helper.CSRF
+@import helper._
 @import modicio.core.TypeHandle
 @import modicio.core.DeepInstance
 @import modicio.core.monitoring.Class
@@ -49,12 +49,13 @@
             @jsonContent
         </div>
 
-
-        <br />
         <div>
-            <select class="col-6" onclick="showData()" id="vis" value="graph" selected style="margin-left: 20">
+            <select class="col-6" onclick="showData()" id="vis" value="graph" style="margin-left: 20">
                 <option value="graph">Graph</option>
                 <option value="table">Table</option>
+                <option value="graphv2">Graph- without changing the size of nodes</option>
+                <option value="graphv3">Graph- color gradient</option>
+                <option value="graphv4">Graph- size of node = sum of instances</option>
             </select>
             <div id="graph">
                 <div id="legend"></div>
@@ -68,6 +69,23 @@
                     <input id="targetRow" name="targetRow" type="text" style="margin-left: 20" onkeyup="searchTable()"/>
                 </div>
             </div>
+            <div>
+                @form(routes.MonitoringController.deleteKnowledgeTime()) {
+                @CSRF.formField
+                <div style="float: left">
+                    <input id="minutes" name="minutes" placeholder="Enter Minutes" style="margin-left: 20">
+                    <button class="btn btn-solid-prim btn-small btn-shadowed m-t-small" id="submit_minutes" name="submit_btn" type="submit">Submit</button>
+                </div>
+                }
+
+                @form(routes.MonitoringController.deleteKnowledgeSize()) {
+                @CSRF.formField
+                <div style="float: left">
+                    <input id="size" name="size" placeholder="Enter Size" style="margin-left: 20">
+                    <button class="btn btn-solid-prim btn-small btn-shadowed m-t-small" id="submit_size" name="submit_btn" type="submit">Submit</button>
+                </div>
+                }
+            </div>
         </div>
 
         <!-- You can do something with javascript here to render stuff-->
@@ -79,20 +97,6 @@
         <script src="https://d3js.org/d3.v4.min.js"></script>
 
         <script>
-
-                function showData() {
-                  var vis = document.getElementById("vis").value
-                  var graph = document.getElementById("graph")
-                  var table = document.getElementById("table")
-                  if (vis == "graph") {
-                    graph.style.display = "block"
-                    table.style.display = "none"
-                  } else {
-                    table.style.display = "block"
-                    graph.style.display = "none"
-                  }
-                }
-
                 const monitoring = $("#jsonMonitoring")
                 const monitoringData = JSON.parse(monitoring.get(0).innerText)
 
@@ -100,7 +104,7 @@
                 console.log("monitoringData", monitoringData)
 
                 const width = 800,
-                    height = 650
+                    height = 600
 
                 const nodes = []
                 const links = []
@@ -116,6 +120,11 @@
                             newVersion = nodes.push({ name: vi.versionId, type: 'version', instances: vi.instances.length, typeName: c.typeName})
                             version = nodes.at(newVersion-1)
                             links.push({source: variant, target: version, type: 'none'})
+                            vi.instances.forEach(function(i) {
+                                newInstance = nodes.push({ name: i, type: 'instance', typeName: c.typeName})
+                                instance = nodes.at(newInstance-1)
+                                links.push({source: version, target: instance, type: 'none'})
+                            })
                         })
                     })
                 })
@@ -136,7 +145,6 @@
                             if (vi.associations !== undefined){
                                 vi.associations.forEach(d => {
                                     version2 = nodes.find(e => e.name === d[2] && e.typeName === d[0])
-                                    console.log("version2:", version2)
                                     if (version2 !== undefined) {
                                         links.push({source: version, target: version2, type: 'associations'})
                                     }
@@ -145,6 +153,58 @@
                         })
                     })
                 })
+
+                function showData() {
+                  var vis = document.getElementById("vis").value
+                  var graph = document.getElementById("graph")
+                  var table = document.getElementById("table")
+                  if (vis == "table") {
+                    table.style.display = "block"
+                    graph.style.display = "none"
+                  } else {
+                    graph.style.display = "block"
+                    table.style.display = "none"
+                  }
+                  setVariant2(vis)
+                  setVariant3(vis)
+                  setVariant4(vis)
+                }
+
+                function setVariant2(vis) {
+                    if (vis == "graphv2") {
+                      svg.selectAll(".node").attr('r', function(node) {
+                        if (node.type == "instance") return 8
+                        return 20
+                      })
+                      svg.selectAll(".link").attr('opacity', 1)
+                      simulation.force("collide", d3.forceCollide().radius(node => getSize(node)+8))
+                    }else {
+                      svg.selectAll(".node").attr('r', function(node) {return getSize(node)})
+                      svg.selectAll(".link").attr('opacity', function(link) {
+                        if (link.target.type == "instance") {return 0}
+                          return 1
+                      })
+                    }
+                }
+
+                function setVariant3(vis) {
+                    if (vis == "graphv3") {
+                      svg.selectAll(".node").style('fill', function(node) {return getColorForNodesAlternative(node)})
+                      svgLegend.selectAll(".node").style('fill', function(node) {return getColorForNodesAlternative(node)})
+                  }else {
+                      svg.selectAll(".node").style('fill', function(node) {return getColorForNodes(node)})
+                      svgLegend.selectAll(".node").style('fill', function(node) {return getColorForNodes(node)})
+                  }
+                }
+
+                function setVariant4(vis) {
+                  if (vis == "graphv4") {
+                    svg.selectAll(".node").attr('r', function(node) {return getSum(node)})
+                    simulation.force("collide", d3.forceCollide().radius(node => getSum(node)+4))
+                  }else if (vis != "graphv2") {
+                    svg.selectAll(".node").attr('r', function(node) {return getSize(node)})
+                  }
+                }
 
                 const svg = d3.select("#graph").append('svg')
                     .attr('width', width)
@@ -162,7 +222,7 @@
                     .force("x", d3.forceX(width / 2))
                     .force("y", d3.forceY(height / 2))
                     .force("charge", d3.forceManyBody())
-                    .force("collide", d3.forceCollide().radius(node => getSize(node)+3))
+                    .force("collide", d3.forceCollide().radius(node => getSize(node)+4))
                     .on("tick", ticked)
 
                 const link = svg.selectAll('.link')
@@ -170,12 +230,16 @@
                     .enter().append('line')
                     .attr('class', 'link')
                     .style('stroke', function(link) {return getColorForLinks(link)})
-                    .style('stroke-width', 3)
+                    .style('stroke-width', 6)
                     .style("stroke-dasharray", function(link) {
                         if (link.type == "associations") {
                             return 5
                         }else { return 0 }
+                    }).attr('opacity', function(link) {
+                        if (link.target.type == "instance") {return 0}
+                        return 1
                     })
+
 
                 const div = d3.select("#graph").append("div")
                      .attr("class", "tooltip-donut")
@@ -215,6 +279,15 @@
                     );
 
 
+                function ticked(d) {
+                    node.attr('cx', function(d) { return d.x; })
+                        .attr('cy', function(d) { return d.y; })
+                    link.attr('x1', function(d) { return d.source.x; })
+                        .attr('y1', function(d) { return d.source.y; })
+                        .attr('x2', function(d) { return d.target.x; })
+                        .attr('y2', function(d) { return d.target.y; })
+                }
+
                 function getOpacityForNodes(node, d) {
                     if (node.typeName == d.typeName) {
                         return 1
@@ -222,13 +295,29 @@
                     return 0.3
                 }
 
-                function getColorForNodes(node) {
+                function getColorForNodesAlternative(node) {
                     switch(node.type) {
                         case 'class':
                         return '#0000a9'
                         break;
                       case 'variant':
                         return '#4242ff'
+                        break;
+                      default:
+                        return '#8e8eff'
+                    }
+                }
+
+                function getColorForNodes(node) {
+                    switch(node.type) {
+                        case 'class':
+                        return '#3399ff'
+                        break;
+                      case 'variant':
+                        return '#6600cc'
+                        break;
+                      case 'version':
+                        return '#00cc00'
                         break;
                       default:
                         return '#8e8eff'
@@ -249,11 +338,40 @@
                 }
 
                 function getSize(node) {
-                    if (node.type == 'version') {
-                        return width * 0.4 * node.instances / nodes.length
-                    }else {
-                        return width * 0.4 / nodes.length
-                    }
+                   if (node.type == 'version') {
+                    return width * 0.4 * node.instances / nodes.length
+                   } else if (node.type == 'instance') {
+                    return 0
+                   } else {
+                    return width * 0.4 / nodes.length
+                   }
+                }
+
+                function getSum(node) {
+                   var sum = 0
+                   if (node.type == 'class') {
+                    variants = links.filter(e => e.source == node && e.target.type == 'variant')
+                    variants.forEach(function(vs){
+                        versions = links.filter(e => e.source == vs.target && e.target.type == 'version')
+                        versions.forEach(function(vi){
+                            sum += vi.target.instances
+                        })
+                    })
+                    return width * 0.4 * sum / nodes.length
+                   }
+                   if (node.type == 'variant') {
+                    versions = links.filter(e => e.source == node && e.target.type == 'version')
+                    versions.forEach(function(vi){
+                        sum += vi.target.instances
+                    })
+                    return width * 0.4 * sum / nodes.length
+                   }
+                   if (node.type == 'version') {
+                    return width * 0.4 * node.instances / nodes.length
+                   }
+                   if (node.type == 'instance') {
+                    return 0
+                   }
                 }
 
                 function getInformation(node) {
@@ -269,15 +387,6 @@
                         text = 'version: ' + node.name + ', instances: ' + node.instances
                     }
                     return text
-                }
-
-                function ticked(e) {
-                    node.attr('cx', function(d) { return d.x; })
-                        .attr('cy', function(d) { return d.y; })
-                    link.attr('x1', function(d) { return d.source.x; })
-                        .attr('y1', function(d) { return d.source.y; })
-                        .attr('x2', function(d) { return d.target.x; })
-                        .attr('y2', function(d) { return d.target.y; })
                 }
 
                 var svgLegend = d3.select("#legend").append("svg").attr("width", 600).attr("height", 100)
@@ -343,15 +452,15 @@
                 function searchType(){
                     var className = document.getElementById("targetNode").value
                     var selectedNodes = d3.selectAll(".node")
-                                    .filter(function(d) { return d.typeName == className })
+                                    .filter(function(d) { return d.typeName.toUpperCase() == className.toUpperCase() })
                     var selectedLinked = d3.selectAll(".link")
-                                    .filter(function(d) { return d.source.typeName == className })
+                                    .filter(function(d) { return d.source.typeName.toUpperCase() == className.toUpperCase() })
                     d3.selectAll(".node").style("opacity","0.2")
                     selectedNodes.style("opacity","1")
-                    selectedLinked.style("stroke-width", 5)
+                    selectedLinked.style("stroke-width", 12)
                     if (className == "") {
                         d3.selectAll(".node").style("opacity","1")
-                        d3.selectAll(".link").style("stroke-width", 3)
+                        d3.selectAll(".link").style("stroke-width", 6)
                     }
                 }
 
@@ -402,16 +511,16 @@
                     var input = document.getElementById("targetRow")
                         table = document.getElementById("monitoringTable")
                         tr = table.getElementsByTagName("tr")
-                        filter = input.value.toUpperCase();
+                        filter = input.value.toUpperCase()
 
                       for (i = 0; i < tr.length; i++) {
                         td = tr[i].getElementsByTagName("td")[0]
                         if (td) {
-                          txtValue = td.textContent || td.innerText;
+                          txtValue = td.textContent || td.innerText
                           if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                            tr[i].style.display = "";
+                            tr[i].style.display = ""
                           } else {
-                            tr[i].style.display = "none";
+                            tr[i].style.display = "none"
                           }
                         }
                       }

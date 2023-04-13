@@ -20,12 +20,14 @@ package controllers
 
 import env.RegistryProvider
 import modicio.core.monitoring.Monitoring
+import modules.model.formdata.{SetSizeForm, SetTimeForm}
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Singleton
 class MonitoringController @Inject()(cc: ControllerComponents) extends
@@ -35,20 +37,57 @@ class MonitoringController @Inject()(cc: ControllerComponents) extends
     for {
       registry <- RegistryProvider.getRegistry
     } yield {
-      
+    
       val monitoringData = registry match {
         case e: Monitoring => registry.asInstanceOf[Monitoring].produceJson().toString()
         case _ => ""
-
+      
       }
-
+    
       /*
       You can also pass the "references" and do something with them, but I don't see a reason why you should...
       Please look at the monitoring.scala.html, I added some code and hints for you.
        */
-
+    
       Ok(views.html.pages.monitoring(monitoringData))
     }
   }
+  
+  
+    def deleteKnowledgeTime(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+      RegistryProvider.getRegistry flatMap (registry => {
+        registry match {
+          case e: Monitoring => {
+            SetTimeForm.form.bindFromRequest fold(
+              errorForm => {
+                Future.successful(Redirect(routes.MonitoringController.index()))
+              },
+              data => {
+                registry.asInstanceOf[Monitoring].deleteObsoleteKnowledge(data.minutes.toInt)
+              })
+          }
+          case _ => ""
+        }
+        Future.successful(Redirect(routes.MonitoringController.index()))
+      })
+    }
+    
+    def deleteKnowledgeSize(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+      RegistryProvider.getRegistry flatMap (registry => {
+        registry match {
+          case e: Monitoring => {
+            SetSizeForm.form.bindFromRequest fold(
+              errorForm => {
+                Future.successful(Redirect(routes.MonitoringController.index()))
+              },
+              data => {
+                registry.asInstanceOf[Monitoring].deleteObsoleteKnowledgeBySize(data.size.toInt)
+              })
+          }
+          case _ => ""
+        }
+        Future.successful(Redirect(routes.MonitoringController.index()))
+      })
+    }
 
 }
