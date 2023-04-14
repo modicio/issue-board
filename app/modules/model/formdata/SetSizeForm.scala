@@ -1,6 +1,6 @@
 /*
  * This file is part of the "issue board" modicio case study software.
- * Copyright (C) 2022 Karl Kegel
+ * Copyright (C) 2022 Karl Kegel, Minji Kim
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
