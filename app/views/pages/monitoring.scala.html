@@ -103,8 +103,8 @@
                 //prints in the browser javascript console
                 console.log("monitoringData", monitoringData)
 
-                const width = 800,
-                    height = 600
+                const width = 900,
+                    height = 700
 
                 const nodes = []
                 const links = []
@@ -176,13 +176,19 @@
                         if (node.type == "instance") return 8
                         return 20
                       })
-                      svg.selectAll(".link").attr('opacity', 1)
-                      simulation.force("collide", d3.forceCollide().radius(node => getSize(node)+8))
+                      svg.selectAll(".link").attr('visibility', 'visible').style('stroke-width', function(link) {
+                        if (link.target.type == "instance") return 3
+                        return 6
+                      })
+                      simulation.force("collide", d3.forceCollide().radius(node => {
+                        if (node.type == "instance") return 0
+                        return getSize(node)+6
+                      }))
                     }else {
                       svg.selectAll(".node").attr('r', function(node) {return getSize(node)})
-                      svg.selectAll(".link").attr('opacity', function(link) {
-                        if (link.target.type == "instance") {return 0}
-                          return 1
+                      svg.selectAll(".link").attr('visibility', function(link) {
+                        if (link.target.type == "instance") {return 'hidden'}
+                          return 'visible'
                       })
                     }
                 }
@@ -212,7 +218,7 @@
 
                 const simulation = d3.forceSimulation(nodes)
                     .force("links", d3.forceLink(links).distance(40).strength(function(link) {
-                      if (link.source.typeName == link.source.typeName) {
+                      if (link.type == "none") {
                         return 1;
                       }
                       else {
@@ -222,7 +228,7 @@
                     .force("x", d3.forceX(width / 2))
                     .force("y", d3.forceY(height / 2))
                     .force("charge", d3.forceManyBody())
-                    .force("collide", d3.forceCollide().radius(node => getSize(node)+4))
+                    .force("collide", d3.forceCollide().radius(node => (getSize(node)*width)/height))
                     .on("tick", ticked)
 
                 const link = svg.selectAll('.link')
@@ -235,10 +241,10 @@
                         if (link.type == "associations") {
                             return 5
                         }else { return 0 }
-                    }).attr('opacity', function(link) {
-                        if (link.target.type == "instance") {return 0}
-                        return 1
-                    })
+                    }).attr('visibility', function(link) {
+                        if (link.target.type == "instance") {return 'hidden'}
+                          return 'visible'
+                      })
 
 
                 const div = d3.select("#graph").append("div")
@@ -256,6 +262,10 @@
                                .duration('50')
                           svg.selectAll('circle')
                                .attr('opacity', function(node) {return getOpacityForNodes(node, d)})
+                          svg.selectAll(".link").attr('opacity', function(link) {
+                            if (link.target.typeName == d.typeName || link.source.typeName == d.typeName) {return 1}
+                              return 0.2
+                          })
                           div.transition()
                                .duration('50')
                                .style("opacity", 1);
@@ -267,6 +277,7 @@
                           d3.select(this).transition()
                                .duration('50')
                                .attr('opacity', '1')
+                          svg.selectAll(".link").attr('opacity', 1)
                           div.transition()
                                .duration('50')
                                .style("opacity", 0)
@@ -292,7 +303,7 @@
                     if (node.typeName == d.typeName) {
                         return 1
                     }
-                    return 0.3
+                    return 0.2
                 }
 
                 function getColorForNodesAlternative(node) {
@@ -339,11 +350,11 @@
 
                 function getSize(node) {
                    if (node.type == 'version') {
-                    return width * 0.4 * node.instances / nodes.length
+                    return (width * 0.6 * node.instances )/ nodes.length
                    } else if (node.type == 'instance') {
                     return 0
                    } else {
-                    return width * 0.4 / nodes.length
+                    return (width * 0.6) / nodes.length
                    }
                 }
 
@@ -378,13 +389,16 @@
                     var text = ''
                     switch(node.type) {
                       case 'class':
-                        text = 'typeName: ' + node.name
+                        text = 'Type name: ' + node.name
                         break;
                       case 'variant':
-                        text = 'variant: ' + node.name
+                        text = 'Variant ' + node.name + ' of Type ' + node.typeName
+                        break;
+                      case 'version':
+                        text = 'Version ' + node.name + ' of Type ' + node.typeName + ' has ' + node.instances + ' instances.'
                         break;
                       default:
-                        text = 'version: ' + node.name + ', instances: ' + node.instances
+                        text = 'Instance ' + node.name + ' of Type ' + node.typeName
                     }
                     return text
                 }
@@ -451,16 +465,21 @@
 
                 function searchType(){
                     var className = document.getElementById("targetNode").value
-                    var selectedNodes = d3.selectAll(".node")
-                                    .filter(function(d) { return d.typeName.toUpperCase() == className.toUpperCase() })
-                    var selectedLinked = d3.selectAll(".link")
-                                    .filter(function(d) { return d.source.typeName.toUpperCase() == className.toUpperCase() })
-                    d3.selectAll(".node").style("opacity","0.2")
-                    selectedNodes.style("opacity","1")
-                    selectedLinked.style("stroke-width", 12)
+
+
+                    svg.selectAll('circle').attr('opacity', function(node) {
+                        if (node.typeName.toUpperCase() == className.toUpperCase()) return 1
+                        return 0.2
+                    })
+                    svg.selectAll(".link").attr('opacity', function(link) {
+                            if (link.target.typeName.toUpperCase() == className.toUpperCase()
+                                || link.source.typeName.toUpperCase() == className.toUpperCase()) {return 1}
+                              return 0.2
+                    })
+
                     if (className == "") {
-                        d3.selectAll(".node").style("opacity","1")
-                        d3.selectAll(".link").style("stroke-width", 6)
+                        d3.selectAll(".node").style("opacity",1)
+                        d3.selectAll(".link").style("opacity", 1)
                     }
                 }
 
