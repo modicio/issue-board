@@ -136,9 +136,11 @@
                             if (vi.parentRelations != undefined) {
                                 vi.parentRelations.forEach(d => {
                                     parent = nodes.find(c => c.name === d[0])
-                                    newRelation = {source: version, target: parent, type: 'parentRelations'}
-                                    if (!links.find(link => link === newRelation) && newRelation !== undefined) {
-                                       links.push(newRelation)
+                                    if (parent != undefined) {
+                                        newRelation = {source: version, target: parent, type: 'parentRelations'}
+                                        if (!links.find(link => link === newRelation) && newRelation !== undefined) {
+                                           links.push(newRelation)
+                                        }
                                     }
                                 })
                             }
