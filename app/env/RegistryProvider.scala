@@ -22,7 +22,7 @@ import modicio.core.{InstanceFactory, ModelElement, Registry, Rule, TimeIdentity
 import modicio.nativelang.defaults.{SimpleDefinitionVerifier, SimpleMapRegistry, SimpleModelVerifier}
 import modicio.nativelang.input.{NativeDSL, NativeDSLParser, NativeDSLTransformer}
 import modules.model.service.ModelService
-
+import modicio.core.monitoring.Monitoring
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.io.Source
@@ -44,19 +44,19 @@ object RegistryProvider {
     //Rules generate their own UUIDs:ss
     Rule.enableAutoID()
 
-    registry = Some(new SimpleMapRegistry(typeFactory, instanceFactory))
-
+    registry = Some(new Monitoring(new SimpleMapRegistry(typeFactory, instanceFactory), typeFactory, instanceFactory))
+    
     typeFactory.setRegistry(registry.get)
     instanceFactory.setRegistry(registry.get)
-
+    
     val source = Source.fromFile("resources/issue_model.json")
     val fileContents = source.getLines.mkString
     println(fileContents)
     source.close()
-
+    
     val initialInput: NativeDSL = NativeDSLParser.parse(fileContents)
     transformer = Some(new NativeDSLTransformer(registry.get, definitionVerifier, modelVerifier))
-
+    
     val preset = for {
       root <- typeFactory.newType(ModelElement.ROOT_NAME, ModelElement.REFERENCE_IDENTITY, isTemplate = true, Some(TimeIdentity.create))
       _ <- registry.get.setType(root)

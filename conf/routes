@@ -1,5 +1,5 @@
 # This file is part of the "issue board" modicio case study software.
-# Copyright (C) 2022 Karl Kegel
+# Copyright (C) 2022 Karl Kegel, Minji Kim
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,6 +25,11 @@ GET         /                                                        controllers
 
 # Show all available Fragments grouped by template/instaciable
 GET         /model                                                   controllers.ModelController.index()
+
+# Show all classes and instances
+GET         /monitoring                                              controllers.MonitoringController.index()
+POST        /monitoring/deleteTime                                   controllers.MonitoringController.deleteKnowledgeTime()
+POST        /monitoring/deleteSize                                   controllers.MonitoringController.deleteKnowledgeSize()
 
 # Show the details and rules of a specific Fragment
 GET         /model/fragment/:name                                    controllers.ModelController.fragment(name: String, identity: String)
