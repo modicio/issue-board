@@ -3,11 +3,17 @@ package modules.model.service
 import modicio.core.util.IdentityProvider
 
 import java.io.{BufferedWriter, File, FileWriter}
+import scala.io.Source
 import sys.process._
 
 class EvolutionService {
 
   def compileFeatureRequest(rawRequest: String): Seq[String] = {
+
+    //0. get JDK path for featurelang JAR
+    val javaConfig = Source.fromFile("./resources/featurecompiler/javaconf.txt")
+    val javaPath = javaConfig.getLines().toSeq.head
+    javaConfig.close()
 
     //1. generate file name for input
     val fileID = IdentityProvider.newRandomId()
@@ -20,7 +26,7 @@ class EvolutionService {
     bufferedWriter.close()
 
     //3. call jar and return result
-    val response = Process("java -jar ./resources/featurecompiler/featurelang.jar " +
+    val response = Process(javaPath + " -jar ./resources/featurecompiler/featurelang.jar " +
       fileName + " " +
       "./resources/featurecompiler/out").!!
 
