@@ -55,7 +55,8 @@ POST        /model/fragment/:name/rules/:ruleId/slot_delete          controllers
 # Delete a rule from the HEAD fragment
 POST        /model/fragment/:name/rules/:ruleId/delete               controllers.ModelController.removeRule(name: String, identity: String, ruleId: String)
 
-
+GET         /model/featurerequest                                    controllers.FeatureRequestController.getRequestPage()
+POST        /model/featurerequest                                    controllers.FeatureRequestController.processRequest()
 
 GET         /issues                                                  controllers.IssueController.index(selection: String)
 GET         /milestones                                              controllers.MilestoneController.index()
