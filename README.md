@@ -20,7 +20,7 @@ This case-study is not guaranteed to be compatible with the nwest modicio versio
 
 The CI pipeline of this repository creates a dist package with a runnable bash script. You can download the package by clicking on the latest CI run. 
 * Unpack the ZIP
-* Place the resources folder of this repos inside the bin folder
+* **Place the resources folder of this repository inside the bin folder**
 * Execute the issue-board bash file inside bin on your terminal. 
 
 After some time, the web-app is available on localhost:9000 (or different port, check the terminal output).
@@ -36,5 +36,7 @@ A running java setup is required to run this application, the dist requires Open
 * Clone this repository
 * Install SBT (Scala build system) and a **JDK 11**
 * Go to the root directory where this README and the ``build.sbt`` is located.
-* Execute ``sbt dist`` and check the terminal output where the generated JAR package is located
+* Execute ``sbt dist`` and check the terminal output where the universal package is located
+  * If zipped, unzip the dist package
+  * **Place the resources folder of this repository inside the bin folder**
 * Alternatively, execute ``sbt run`` directly to start the app without generating a JAR
