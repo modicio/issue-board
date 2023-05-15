@@ -18,6 +18,8 @@
 
 package controllers
 
+import modules.model.service.EvolutionService
+
 import javax.inject._
 import play.api.Logging
 import play.api.i18n.I18nSupport
@@ -25,12 +27,14 @@ import play.api.mvc._
 
 
 @Singleton
-class ApplicationController @Inject()(cc: ControllerComponents) extends
+class ApplicationController @Inject()(cc: ControllerComponents, evolutionService: EvolutionService) extends
   AbstractController(cc) with I18nSupport with Logging {
 
 
-  def index: Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+  def index: Action[AnyContent] = Action { implicit request: Request[AnyContent] => {
+    evolutionService.compileFeatureRequest("the Car must have the attribute speed. it is a number.\nCar should not inherit from Bus.\nthe class Car has an existing manufacturer.\nit must be a phrase.\nthe class Car must have associations to Driver called drivenBy.\nit must exist the class Ship.")
     Redirect(routes.IssueController.index(""))
+    }
   }
 
 }
