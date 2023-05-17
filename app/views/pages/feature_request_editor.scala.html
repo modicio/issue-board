@@ -1,0 +1,51 @@
+@*
+* This file is part of the "issue board" modicio case study software.
+* Copyright (C) 2022 Karl Kegel
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+* *@
+@import views.html.helper.CSRF
+@import modicio.core.DeepInstance
+
+@import modicio.core.TypeHandle
+
+@import views.html.components.message_box_error
+@(allClasses: Seq[TypeHandle], input: Option[String], error: Option[String])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+
+@app {
+
+    <div class="full-width flex-container vertical centered">
+
+                <style>
+                    .textarea-input {
+                        border-radius: 20px;
+                        border: none;
+                        font-size: large;
+                        padding: 10pt;
+                    }
+                </style>
+
+        <div class="col-7">
+            @if(error.isDefined){
+                @message_box_error(error)
+            }
+        @helper.form(action = routes.FeatureRequestController.processRequest(), ((Symbol.apply("class") -> "full-width"))) {
+            @CSRF.formField
+            <textarea name="content" class="full-width textarea-input" rows="10" placeholder="Write your feature request...">@if(input.isDefined){@input.get}</textarea>
+            <button class="btn btn-bordered-sec input-medium p-ltrb-mini m-t-medium">Send</button>
+        }
+        </div>
+    </div>
+
+}("Feature Request Editor")

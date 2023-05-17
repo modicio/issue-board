@@ -1,0 +1,36 @@
+@*
+* This file is part of the "issue board" modicio case study software.
+* Copyright (C) 2022 Karl Kegel
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+* *@
+@import views.html.helper.CSRF
+@import modicio.core.DeepInstance
+
+@import modicio.core.TypeHandle
+
+@()(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+
+@app {
+
+    <div class="full-width flex-container vertical centered">
+
+                <img class="m-l-small m-t-mini rotation" src="@routes.Assets.versioned("images/checked.png")" height="150pt" width="150pt"/>
+
+                <!--<a href="https://www.flaticon.com/free-icons/tick" title="tick icons">Tick icons created by Roundicons - Flaticon</a>-->
+
+                <a href="@routes.FeatureRequestController.getRequestPage()"><button class="btn btn-bordered-sec input-large p-ltrb-mini m-t-medium">New Request</button></a>
+    </div>
+
+}("Feature Request Editor")
