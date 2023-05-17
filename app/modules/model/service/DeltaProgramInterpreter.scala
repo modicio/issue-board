@@ -39,7 +39,7 @@ class DeltaProgramInterpreter(abstractController: AbstractController, operationT
       case o if o.startsWith("CLOSE CLASS") && cachedClass.isDefined =>
         await(abstractController.storeClass(cachedClass.get))
         cachedClass = None
-      case o if o.startsWith("DELETE CLASS") && cachedClass.isDefined =>
+      case o if o.startsWith("DELETE CLASS") =>
         await(abstractController.deleteClass(subjectName(o)))
         cachedClass = None
       case o if o.startsWith("CREATE CLASS") =>
@@ -103,6 +103,7 @@ class DeltaProgramInterpreter(abstractController: AbstractController, operationT
         val newAttribute = AttributeRule.create(old.name, newType, old.nonEmpty)
         cachedClass.get.removeRule(old)
         cachedClass.get.applyRule(newAttribute)
+      case _ => println("NOP")
     }
 
   }
