@@ -18,11 +18,13 @@
 
 package controllers
 
+import env.RegistryProvider
 import modules.model.formdata.FeatureRequestForm
 import modules.model.service.EvolutionService
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import javax.inject.{Inject, Singleton}
 
@@ -31,8 +33,13 @@ class FeatureRequestController @Inject()(cc: ControllerComponents, evolutionServ
   AbstractController(cc) with I18nSupport with Logging {
 
   def getRequestPage: Action[AnyContent] =
-    Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.pages.feature_request_editor(Seq(), request.flash.get("input"), request.flash.get("error")))
+    Action.async { implicit request: Request[AnyContent] =>
+      for {
+        registry <- RegistryProvider.getRegistry
+        references <- registry.getReferences
+      } yield {
+        Ok(views.html.pages.feature_request_editor(references.toSeq.sortBy(_.getTypeName), request.flash.get("input"), request.flash.get("error")))
+      }
   }
 
   def getSuccessPage: Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
