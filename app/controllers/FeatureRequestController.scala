@@ -18,18 +18,13 @@
 
 package controllers
 
-import modules.instances.formdata.{NewAssociationForm, UpdateStringValueForm}
-import modules.instances.service.InstanceService
 import modules.model.formdata.FeatureRequestForm
 import modules.model.service.EvolutionService
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 
-import java.lang.System.Logger
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 @Singleton
 class FeatureRequestController @Inject()(cc: ControllerComponents, evolutionService: EvolutionService) extends
@@ -54,17 +49,16 @@ class FeatureRequestController @Inject()(cc: ControllerComponents, evolutionServ
           try {
             val (deltaSequence, stdout) = evolutionService.compileFeatureRequest(content)
             println(deltaSequence)
-
             if(deltaSequence.isEmpty){
               println(stdout)
               Redirect(routes.FeatureRequestController.getRequestPage()).flashing("input" -> content, "error" -> "Your input contains incorrect language!")
             }else{
+              evolutionService.interpretDeltaProgram(deltaSequence)
               Redirect(routes.FeatureRequestController.getSuccessPage())
             }
           } catch {
-            case e: Any => Redirect(routes.FeatureRequestController.getRequestPage())
+            case e: Throwable => Redirect(routes.FeatureRequestController.getRequestPage()).flashing("error" -> e.getMessage)
           }
-
         })
     }
 
