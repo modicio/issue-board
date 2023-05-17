@@ -26,6 +26,7 @@ import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 
+import java.lang.System.Logger
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -34,26 +35,36 @@ import scala.concurrent.Future
 class FeatureRequestController @Inject()(cc: ControllerComponents, evolutionService: EvolutionService) extends
   AbstractController(cc) with I18nSupport with Logging {
 
-  def getRequestPage: Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    Ok("Hi")
+  def getRequestPage: Action[AnyContent] =
+    Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.pages.feature_request_editor(Seq(), request.flash.get("input"), request.flash.get("error")))
   }
 
   def getSuccessPage: Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    Ok("Work Done!")
+    Ok(views.html.pages.feature_request_success())
   }
 
-  def processRequest(): Action[AnyContent] =
-    Action.async { implicit request: Request[AnyContent] =>
+  def processRequest(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
       FeatureRequestForm.form.bindFromRequest fold (
         errorForm => {
-          Future.successful(Redirect(routes.FeatureRequestController.getRequestPage()))
+          Redirect(routes.FeatureRequestController.getRequestPage())
         },
         data => {
           val content = data.content
           try {
-            val deltaSequence = evolutionService.compileFeatureRequest(content)
+            val (deltaSequence, stdout) = evolutionService.compileFeatureRequest(content)
+            println(deltaSequence)
+
+            if(deltaSequence.isEmpty){
+              println(stdout)
+              Redirect(routes.FeatureRequestController.getRequestPage()).flashing("input" -> content, "error" -> "Your input contains incorrect language!")
+            }else{
+              Redirect(routes.FeatureRequestController.getSuccessPage())
+            }
+          } catch {
+            case e: Any => Redirect(routes.FeatureRequestController.getRequestPage())
           }
-          Redirect(routes.MilestoneController.getMilestone(instanceId)))
+
         })
     }
 
