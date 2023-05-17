@@ -100,7 +100,7 @@ class DeltaProgramInterpreter(abstractController: AbstractController, operationT
           }
         }
         val old = cachedAttribute.get
-        val newAttribute = AttributeRule.create(old.name, typeValue, old.nonEmpty)
+        val newAttribute = AttributeRule.create(old.name, newType, old.nonEmpty)
         cachedClass.get.removeRule(old)
         cachedClass.get.applyRule(newAttribute)
     }
