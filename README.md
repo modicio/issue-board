@@ -28,7 +28,10 @@ This project contains a static build of the [featurelang project](https://github
 
 The CI pipeline of this repository creates a dist package with a runnable bash script. You can download the package by clicking on the latest CI run. 
 * Unpack the ZIP
+* Install a **JDK 11** and a **JDK 17**
 * **Place the resources folder of this repository inside the bin folder**
+* Make sure that JDK 11 is active by checking ``java --version``. Otherwise, update your JAVA_HOME.
+* Open the ``javaconf.txt`` file inside ``resources/featurecompiler`` and enter the path to the java 17 executable.
 * Execute the issue-board bash file inside bin on your terminal. 
 
 After some time, the web-app is available on localhost:9000 (or different port, check the terminal output).
