@@ -16,7 +16,7 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 * *@
 
-@(content: Html = Html(""))(headline: String)
+@(content: Html = Html(""))(headline: String, enableRequests: Boolean = false)
 
 <style>
     .main {
@@ -44,16 +44,43 @@
                 <div class="flex-container horizontal full-width left-align m-t-small" role="presentation">
                     <div class="col-2" role="presentation">
                         <div role="menu" class="flex-container vertical right-align full-width">
-                            <a role="menuitem" class="m-r-small nav-link" href='@routes.IssueController.index("")'><button class="btn btn-solid-sec btn-shadowed p-l-mini - p-r-mini">Issue Board</button></a>
-                            <a role="menuitem" class="m-r-small m-t-mini nav-link" href='@routes.MilestoneController.index()'><button class="btn btn-solid-sec btn-shadowed p-l-mini - p-r-mini">Milestones</button></a>
-                            <a role="menuitem" class="m-r-small m-t-mini nav-link" href="@routes.ModelController.index()"><button class="btn btn-bordered-sec btn-shadowed p-l-mini - p-r-mini">Admin Area</button></a>
-                            <a role="menuitem" class="m-r-small m-t-mini nav-link" href="@routes.MonitoringController.index()"><button class="btn btn-bordered-sec btn-shadowed p-l-mini - p-r-mini">Monitoring Board</button></a>
+                            <a role="menuitem" class="m-r-small nav-link" href='@routes.IssueController.index("")'><button class="btn btn-solid-sec btn-shadowed p-l-mini p-r-mini">Issue Board</button></a>
+                            <a role="menuitem" class="m-r-small m-t-mini nav-link" href='@routes.MilestoneController.index()'><button class="btn btn-solid-sec btn-shadowed p-l-mini p-r-mini">Milestones</button></a>
+                            <a role="menuitem" class="m-r-small m-t-large nav-link" href="@routes.ModelController.index()"><button class="btn btn-bordered-sec btn-shadowed p-l-mini p-r-mini">Admin Area</button></a>
+                            <a role="menuitem" class="m-r-small m-t-mini nav-link" href="@routes.MonitoringController.index()"><button class="btn btn-bordered-sec btn-shadowed p-l-mini p-r-mini">Monitoring Board</button></a>
                         </div>
                     </div>
                     <div role="main" class="col-7 card p-ltrb-small shadowed">
                     @content
+                        <br />
+                        <div class="m-t-large">
+                            <a href="@routes.ApplicationController.about()">about & attributions</a>
+                        </div>
                     </div>
+                    @if(enableRequests) {
+                        <div>
+                            <style>
+                                    .rotation {
+                                        animation: rotation 10s infinite linear;
+                                    }
+
+                                    @@keyframes rotation {
+
+                                    from {
+                                        transform: rotate(0deg);
+                                    }
+
+                                    to {
+                                        transform: rotate(359deg);
+                                    }
+
+                                    }
+                            </style>
+                            <a href="@routes.FeatureRequestController.getRequestPage()"><img class="m-l-small m-t-mini rotation" src="@routes.Assets.versioned("images/gear.png")" height="30pt" width="30pt"/></a>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
+
     }

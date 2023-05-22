@@ -22,6 +22,7 @@ GET         /assets/*file                                            controllers
 
 # Redirect to model/
 GET         /                                                        controllers.ApplicationController.index()
+GET         /about                                                   controllers.ApplicationController.about()
 
 # Show all available Fragments grouped by template/instaciable
 GET         /model                                                   controllers.ModelController.index()
@@ -55,7 +56,9 @@ POST        /model/fragment/:name/rules/:ruleId/slot_delete          controllers
 # Delete a rule from the HEAD fragment
 POST        /model/fragment/:name/rules/:ruleId/delete               controllers.ModelController.removeRule(name: String, identity: String, ruleId: String)
 
-
+GET         /model/featurerequest                                    controllers.FeatureRequestController.getRequestPage()
+GET         /model/featurerequest/success                            controllers.FeatureRequestController.getSuccessPage()
+POST        /model/featurerequest                                    controllers.FeatureRequestController.processRequest()
 
 GET         /issues                                                  controllers.IssueController.index(selection: String)
 GET         /milestones                                              controllers.MilestoneController.index()

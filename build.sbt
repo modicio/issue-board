@@ -2,7 +2,7 @@ name := """issue-board"""
 
 organization := "de.modicio"
 maintainer := "modicio github organisation"
-version := "0.1"
+version := "0.2"
 scalaVersion := "2.13.7"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)

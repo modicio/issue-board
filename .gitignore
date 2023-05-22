@@ -8,3 +8,9 @@ target
 /RUNNING_PID
 db.conf
 .DS_Store
+/featurecompiler/out
+
+*.featurelang
+evolution.txt
+
+!featurelang.jar
