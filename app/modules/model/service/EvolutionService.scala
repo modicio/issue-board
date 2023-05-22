@@ -70,7 +70,7 @@ class EvolutionService @Inject()(modelService: ModelService) {
       fileName + " " +
       "./resources/featurecompiler/out").!!
 
-    val lines = response.split('\n').filter(!_.isBlank)
+    val lines = response.replace("\r", "").split('\n').filter(!_.isBlank)
     val deltaProgram = lines.slice(lines.indexOf(">>>")+1, lines.indexOf("<<<")).toSeq
     //println("response", response)
     println(deltaProgram)
