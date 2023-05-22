@@ -14,6 +14,10 @@ Most functionality regarding modicio is further explained and extracted as part 
 
 This case-study is not guaranteed to be compatible with the newest modicio version. A compiled modicio version is included in this repo.
 
+* This project contains the following [releases](https://github.com/modicio/issue-board/releases):
+  * **v 0.1.0 Basic Case Study** - the initial implementation to demonstrate the feasibility of the modicio framework.
+  * **v 0.2.0 Feature DSL Case Study** - extended case study to demonstrate the feasibility of a feature-request DSL at runtime.
+
 ## Getting Started
 
 ### modicio
