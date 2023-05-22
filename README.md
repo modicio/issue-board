@@ -1,4 +1,4 @@
-# issue board (case-study)
+# issue-board (case-study)
 
 ## About
 
@@ -12,9 +12,17 @@ Most functionality regarding modicio is further explained and extracted as part 
 
 ## Release Notes
 
-This case-study is not guaranteed to be compatible with the nwest modicio version. A compiled modicio version is included in this repo.
+This case-study is not guaranteed to be compatible with the newest modicio version. A compiled modicio version is included in this repo.
 
 ## Getting Started
+
+### modicio
+
+This project contains a static build of the [modicio framework](https://github.com/modicio/modicio). Please check the modicio documentation and wiki for more Information.
+
+### Feature DSL
+
+This project contains a static build of the [featurelang project](https://github.com/modicio/feature-dsl-tools) to compile feature requests at runtime. Please check the respective documentation.
 
 ### Start from CI Build
 
@@ -34,9 +42,17 @@ A running java setup is required to run this application, the dist requires Open
 ###  Custom Build
 
 * Clone this repository
-* Install SBT (Scala build system) and a **JDK 11**
+* Install SBT (Scala build system) and a **JDK 11** as well as a **JDK 17**
+* Make sure that JDK 11 is active by checking ``java --version``. Otherwise, update your JAVA_HOME.
 * Go to the root directory where this README and the ``build.sbt`` is located.
 * Execute ``sbt dist`` and check the terminal output where the universal package is located
   * If zipped, unzip the dist package
   * **Place the resources folder of this repository inside the bin folder**
-* Alternatively, execute ``sbt run`` directly to start the app without generating a JAR
+  * Open the ``javaconf.txt`` file inside ``resources/featurecompiler`` and enter the path to the java 17 executable.
+* Alternatively, execute ``sbt run`` directly to start the app without generating a JAR (Set the java 17 path as stated in the step above)
+
+---
+
+**Attributions**
+* [Gear icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/gear)
+* [Tick icons created by Roundicons - Flaticon](https://www.flaticon.com/free-icons/tick)

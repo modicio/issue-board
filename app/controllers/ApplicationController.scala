@@ -36,4 +36,9 @@ class ApplicationController @Inject()(cc: ControllerComponents, evolutionService
     }
   }
 
+  def about: Action[AnyContent] = Action { implicit request: Request[AnyContent] => {
+     Ok(views.html.pages.about_attributions())
+    }
+  }
+
 }

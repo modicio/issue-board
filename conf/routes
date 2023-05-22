@@ -22,6 +22,7 @@ GET         /assets/*file                                            controllers
 
 # Redirect to model/
 GET         /                                                        controllers.ApplicationController.index()
+GET         /about                                                   controllers.ApplicationController.about()
 
 # Show all available Fragments grouped by template/instaciable
 GET         /model                                                   controllers.ModelController.index()

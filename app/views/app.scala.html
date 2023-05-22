@@ -52,6 +52,10 @@
                     </div>
                     <div role="main" class="col-7 card p-ltrb-small shadowed">
                     @content
+                        <br />
+                        <div class="m-t-large">
+                            <a href="@routes.ApplicationController.about()">about & attributions</a>
+                        </div>
                     </div>
                     @if(enableRequests) {
                         <div>
@@ -73,10 +77,10 @@
                                     }
                             </style>
                             <a href="@routes.FeatureRequestController.getRequestPage()"><img class="m-l-small m-t-mini rotation" src="@routes.Assets.versioned("images/gear.png")" height="30pt" width="30pt"/></a>
-                                <!--<a href="https://www.flaticon.com/free-icons/gear" title="gear icons">Gear icons created by Freepik - Flaticon</a>-->
                         </div>
                     }
                 </div>
             </div>
         </div>
+
     }
