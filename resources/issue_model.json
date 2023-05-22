@@ -35,7 +35,7 @@
       ],
       "associations": [],
       "attributes": [
-        ":Feature Description:STRING:true"
+        ":Description:STRING:true"
       ],
       "values": []
     },
