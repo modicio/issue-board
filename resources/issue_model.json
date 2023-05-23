@@ -48,8 +48,7 @@
       "associations": [],
       "attributes": [
         ":Report:STRING:true",
-        ":Log:STRING:false",
-        ":Product Version:STRING:false"
+        ":Log:STRING:false"
       ],
       "values": []
     }

@@ -26,14 +26,14 @@
             <div class="p-t-small p-b-small p-r-medium p-l-medium">
                 <div class="headline-text m-b-small"><b>Milestones</b></div>
                 <div class="flex-container full-width stretched horizontal m-b-mini bg-sec fc-white p-t-mini p-b-mini">
-                    <div class="m-l-small m-r-small input-medium">Key</div>
-                    <div class="weight-2"><b>Title</b></div>
+                    <!--<div class="m-l-small m-r-small input-medium">Key</div>-->
+                    <div class="weight-2 m-l-small"><b>Title</b></div>
                     <div class="m-l-medium m-r-small">Action</div>
                 </div>
                 @for(instance <- selection) {
                     <div class="flex-container full-width stretched horizontal m-t-mini p-t-mini p-b-mini bg-lg">
-                        <div class="m-l-small m-r-small input-medium">@instance.getTypeHandle.getTypeIdentity.takeRight(5)</div>
-                        <div class="weight-2"><b>@instance.deepValue("Title").getOrElse("[untitled]")</b></div>
+                        <!--<div class="m-l-small m-r-small input-medium">@instance.getTypeHandle.getTypeIdentity.takeRight(5)</div>-->
+                        <div class="weight-2 m-l-small"><b>@instance.deepValue("Title").getOrElse("untitled")</b></div>
                         <div class=" m-l-small m-r-small"><a href='@routes.MilestoneController.getMilestone(instance.getInstanceId)'>open</a></div>
                         @helper.form(action = routes.MilestoneController.deleteMilestone(instance.getInstanceId)) {
                             @CSRF.formField
@@ -51,4 +51,4 @@
     <button class="btn btn-medium btn-bordered-sec">New Milestone</button>
 }
 </div>
-    }("Issue Board :: Milestones", true)
+    }("Milestones", true)

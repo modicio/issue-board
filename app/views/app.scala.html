@@ -16,6 +16,7 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 * *@
 
+@import scala.reflect.internal.util.NoSourceFile.content
 @(content: Html = Html(""))(headline: String, enableRequests: Boolean = false)
 
 <style>
@@ -46,16 +47,14 @@
                         <div role="menu" class="flex-container vertical right-align full-width">
                             <a role="menuitem" class="m-r-small nav-link" href='@routes.IssueController.index("")'><button class="btn btn-solid-sec btn-shadowed p-l-mini p-r-mini">Issue Board</button></a>
                             <a role="menuitem" class="m-r-small m-t-mini nav-link" href='@routes.MilestoneController.index()'><button class="btn btn-solid-sec btn-shadowed p-l-mini p-r-mini">Milestones</button></a>
-                            <a role="menuitem" class="m-r-small m-t-large nav-link" href="@routes.ModelController.index()"><button class="btn btn-bordered-sec btn-shadowed p-l-mini p-r-mini">Admin Area</button></a>
-                            <a role="menuitem" class="m-r-small m-t-mini nav-link" href="@routes.MonitoringController.index()"><button class="btn btn-bordered-sec btn-shadowed p-l-mini p-r-mini">Monitoring Board</button></a>
+                            <!--<a role="menuitem" class="m-r-small m-t-large nav-link" href="@routes.ModelController.index()"><button class="btn btn-bordered-sec btn-shadowed p-l-mini p-r-mini">Admin Area</button></a>-->
+                            <!--<a role="menuitem" class="m-r-small m-t-mini nav-link" href="@routes.MonitoringController.index()"><button class="btn btn-bordered-sec btn-shadowed p-l-mini p-r-mini">Monitoring Board</button></a>-->
+
+                            <a role="menuitem" class="m-r-small nav-link m-t-large" href="@routes.ApplicationController.about()">about &<br />attributions</a>
                         </div>
                     </div>
                     <div role="main" class="col-7 card p-ltrb-small shadowed">
                     @content
-                        <br />
-                        <div class="m-t-large">
-                            <a href="@routes.ApplicationController.about()">about & attributions</a>
-                        </div>
                     </div>
                     @if(enableRequests) {
                         <div>
