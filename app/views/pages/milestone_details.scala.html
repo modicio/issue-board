@@ -23,22 +23,22 @@
 
 @app {
     <div class="full-width flex-container vertical centered">
-        <div class="col-7 card shadowed m-b-small m-t-medium p-ltrb-small">
+        <!--<div class="col-7 card shadowed m-b-small m-t-medium p-ltrb-small">
             <h3>Edit Milestone</h3>
-        </div>
+        </div>-->
 
         <div class="col-7 card shadowed m-b-small m-t-medium p-l-small p-r-small">
             <div class="p-t-small p-b-small p-r-medium p-l-medium">
                 <div class="headline-text m-b-small"><b>Data</b></div>
-                <div class="flex-container full-width stretched horizontal m-b-mini bg-sec fc-white p-t-mini p-b-mini">
+                <!--<div class="flex-container full-width stretched horizontal m-b-mini bg-sec fc-white p-t-mini p-b-mini">
                     <div class="m-l-small col-2"><b>Name</b></div>
                     <div class="m-l-small col-2"><b>Obligatory</b></div>
-                    <div class="weight-2"><b>Datatype</b></div>
-                </div>
+                    <div class="weight-2"></div>
+                </div>-->
                 @for((prop, rule) <- instance.deepAttributeMap()) {
                     <div class="flex-container full-width stretched horizontal m-t-mini p-t-mini p-b-mini bg-lg">
                         <div class="m-l-small col-2">@rule.name</div>
-                        <div class="m-l-small col-2">@rule.nonEmpty</div>
+                        <!--<div class="m-l-small col-2">@rule.nonEmpty</div>-->
                         <div class="weight-2">@update_attribute_form(prop, rule, routes.MilestoneController.updateAttribute(instance.getInstanceId, prop.key), None)</div>
                     </div>
                 }
@@ -47,24 +47,25 @@
 
         <div class="col-7 card shadowed m-b-small m-t-medium p-l-small p-r-small">
             <div class="p-t-small p-b-small p-r-medium p-l-medium">
-                <div class="headline-text m-b-small"><b>Associations</b></div>
+                <div class="headline-text m-b-small"><b>Links</b></div>
                 @if(instance.getDeepAssociations.nonEmpty) {
                     <div class="flex-container full-width stretched horizontal m-b-mini bg-sec fc-white p-t-mini p-b-mini">
-                        <div class="m-l-small col-2"><b>Relation</b></div>
-                        <div class="m-l-small col-2"><b>hasType</b></div>
+                        <div class="m-l-small col-2"><b>Link</b></div>
+                        <!--<div class="m-l-small col-2"><b>hasType</b></div>-->
                         <div class="weight-2"><b>Title</b></div>
                         <div class="m-l-medium m-r-small">Action</div>
                     </div>
                     @for(association <- associatedInstances) {
                         <div class="flex-container full-width stretched horizontal m-t-mini p-t-mini p-b-mini bg-lg">
                             <div class="m-l-small col-2">@association._1.byRelation</div>
-                            @if(association._1.isFinal) {
+                            <!--@if(association._1.isFinal) {
                                 <div class="m-l-small col-2">(final concept)</div>
                                 <div class="weight-2"><b>@association._2.getTypeHandle.getTypeName</b></div>
                             } else {
                                 <div class="m-l-small col-2">@association._2.getTypeHandle.getTypeName</div>
                                 <div class="weight-2"><b>@association._2.deepValue("Title").getOrElse("[untitled]")</b></div>
-                            }
+                            }-->
+                            <div class="weight-2"><b>@association._2.deepValue("Title").getOrElse("untitled")</b></div>
                             @if(association._2.getTypeHandle.getTypeName == "Milestone"){
                                 <div class="m-l-small m-r-small"><a href='@routes.MilestoneController.getMilestone(association._2.getInstanceId)'>open</a></div>
                             }else{
@@ -74,7 +75,7 @@
 
                     }
                 } else {
-                    [Empty]
+                    No Links
                 }
                 <div class="m-t-medium">
                 @for(associationRule <- instance.deepAssociationRuleMap.keySet) {
@@ -90,4 +91,4 @@
         </div>
     </div>
 
-}("Instance Details User-View", true)
+}("Milestone Details", true)

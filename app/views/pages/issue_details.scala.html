@@ -23,42 +23,19 @@
 
 @app {
     <div class="full-width flex-container vertical centered">
-    <div class="col-7 card shadowed m-b-small m-t-medium p-ltrb-small">
-            <div class="m-l-medium m-r-small m-t-small">
-                <strong>This instance is a...</strong> @for(typeValue <- instance.getTypeClosure){
-                    <span class="p-ltrb-mini bg-sec fc-white rounded">@typeValue</span>
-                }
-            </div>
-            <div class="m-l-medium m-r-small m-t-medium">
-                <strong>This instance can be associated with...</strong> @for(typeValue <- instance.deepAssociationRuleMap.keySet){
-                <span class="p-ltrb-mini bg-sec fc-white">&#60;= @typeValue</span>
-            }
-            </div>
-            <div class="m-l-medium m-r-small m-t-medium">
-                 <span hidden id="extid" class="p-ltrb-mini">@instance.getTypeHandle.getTypeName:@instance.getInstanceId</span> <button onclick="copyId('extid')">Copy ID Link</button>
-            </div>
-
-            <script>
-                    function copyId(target) {
-                        const copyText = document.getElementById(target).textContent;
-                        navigator.clipboard.writeText(copyText);
-                        //alert("Copied the text: " + copyText);
-                    }
-            </script>
-    </div>
 
     <div class="col-7 card shadowed m-b-small m-t-medium p-l-small p-r-small">
         <div class="p-t-small p-b-small p-r-medium p-l-medium">
             <div class="headline-text m-b-small"><b>Data</b></div>
-            <div class="flex-container full-width stretched horizontal m-b-mini bg-sec fc-white p-t-mini p-b-mini">
-                <div class="m-l-small col-2"><b>Name</b></div>
-                <div class="m-l-small col-2"><b>Obligatory</b></div>
-                <div class="weight-2"><b>Datatype</b></div>
-            </div>
+            <!--<div class="flex-container full-width stretched horizontal m-b-mini bg-sec fc-white p-t-mini p-b-mini">
+                <div class="m-l-small col-2"><b>Name</b></div>-->
+                <!--<div class="m-l-small col-2"><b>Obligatory</b></div>-->
+                <!--<div class="weight-2"><b>Datatype</b></div>-->
+            <!--</div>-->
             @for((prop, rule) <- instance.deepAttributeMap().toSeq.sortBy(_._1.key)) {
                 <div class="flex-container full-width stretched horizontal m-t-mini p-t-mini p-b-mini bg-lg">
                     <div class="m-l-small col-2">@rule.name</div>
-                    <div class="m-l-small col-2">@rule.nonEmpty</div>
+                    <!--<div class="m-l-small col-2">@rule.nonEmpty</div>-->
                     <div class="weight-2">@update_attribute_form(prop, rule, routes.IssueController.updateAttribute(selection, instance.getInstanceId, prop.key), None)</div>
                 </div>
             }
@@ -67,24 +44,25 @@
 
     <div class="col-7 card shadowed m-b-small m-t-medium p-l-small p-r-small">
         <div class="p-t-small p-b-small p-r-medium p-l-medium">
-            <div class="headline-text m-b-small"><b>Associations</b></div>
+            <div class="headline-text m-b-small"><b>Links</b></div>
             @if(instance.getDeepAssociations.nonEmpty){
                         <div class="flex-container full-width stretched horizontal m-b-mini bg-sec fc-white p-t-mini p-b-mini">
-                            <div class="m-l-small col-2"><b>Relation</b></div>
-                            <div class="m-l-small col-2"><b>hasType</b></div>
+                            <div class="m-l-small col-2"><b>Link</b></div>
+                            <!--<div class="m-l-small col-2"><b>hasType</b></div>-->
                             <div class="weight-2"><b>Title</b></div>
                             <div class="m-l-medium m-r-small">Action</div>
                         </div>
                         @for(association <- associatedInstances){
                                 <div class="flex-container full-width stretched horizontal m-t-mini p-t-mini p-b-mini bg-lg">
                                     <div class="m-l-small col-2">@association._1.byRelation</div>
-                                    @if(association._1.isFinal) {
+                                    <!--@if(association._1.isFinal) {
                                         <div class="m-l-small col-2">(final concept)</div>
                                         <div class="weight-2"><b>@association._2.getTypeHandle.getTypeName</b></div>
                                     }else{
                                         <div class="m-l-small col-2">@association._2.getTypeHandle.getTypeName</div>
                                         <div class="weight-2"><b>@association._2.deepValue("Title").getOrElse("[untitled]")</b></div>
-                                    }
+                                    }-->
+                                    <div class="weight-2"><b>@association._2.deepValue("Title").getOrElse("untitled")</b></div>
                                     @if(association._2.getTypeHandle.getTypeName == "Milestone"){
                                         <div class="m-l-small m-r-small"><a href='@routes.MilestoneController.getMilestone(association._2.getInstanceId)'>open</a></div>
                                     }else{
@@ -93,8 +71,6 @@
                                 </div>
 
                         }
-            }else{
-                [Empty]
             }
             <div class="m-t-medium">
                 @for(associationRule <- instance.deepAssociationRuleMap.keySet){
@@ -104,11 +80,84 @@
                             @new_association_form(selection, associationRule, instance, instance.deepAssociationRuleMap(associationRule).toSet, routes.IssueController.addAssociation(selection, instance.getInstanceId, associationRule))
                         </div>
                     </div>
-
+                }
+                @if(instance.deepAssociationRuleMap.keySet.isEmpty){
+                    Linking is not activated for @selection
                 }
             </div>
         </div>
     </div>
+
+
+    <div class="col-7 card shadowed m-b-small m-t-medium p-ltrb-small">
+        <button type="button" class="collapsible">Technical Information +</button>
+        <div class="content full-width">
+            <div class="m-l-medium m-r-small m-t-small">
+                <strong>This instance is a...</strong> @for(typeValue <- instance.getTypeClosure){
+                <span class="p-ltrb-mini bg-sec fc-white rounded">@typeValue</span>
+            }
+            </div>
+            <div class="m-l-medium m-r-small m-t-medium m-b-medium">
+                <strong>This instance can be associated with...</strong> @for(typeValue <- instance.deepAssociationRuleMap.keySet){
+                <span class="p-ltrb-mini bg-sec fc-white">&#60;= @typeValue</span>
+            }
+            </div>
+        </div>
+        <div class="m-l-small m-r-small m-t-medium">
+            <span hidden id="extid" class="p-ltrb-mini">@instance.getTypeHandle.getTypeName:@instance.getInstanceId</span> <button onclick="copyId('extid')">Copy Link</button>
+        </div>
+
+        <script>
+                function copyId(target) {
+                    const copyText = document.getElementById(target).textContent;
+                    navigator.clipboard.writeText(copyText);
+                    //alert("Copied the text: " + copyText);
+                }
+
+                var coll = document.getElementsByClassName("collapsible");
+                var i;
+
+                for (i = 0; i < coll.length; i++) {
+                    coll[i].addEventListener("click", function() {
+                        this.classList.toggle("active");
+                        var content = this.nextElementSibling;
+                        if (content.style.display === "block") {
+                            content.style.display = "none";
+                        } else {
+                            content.style.display = "block";
+                        }
+                    });
+                }
+        </script>
+
+        <style>
+                /* Style the button that is used to open and close the collapsible content */
+                .collapsible {
+                    background-color: #eee;
+                    color: #444;
+                    cursor: pointer;
+                    padding: 18px;
+                    width: 100%;
+                    border: none;
+                    text-align: left;
+                    outline: none;
+                    font-size: 15px;
+                }
+
+                /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+                .active, .collapsible:hover {
+                    background-color: #ccc;
+                }
+
+                /* Style the collapsible content. Note: hidden by default */
+                .content {
+                    display: none;
+                    overflow: hidden;
+                    background-color: #f1f1f1;
+                }
+        </style>
     </div>
 
-}("Instance Details User-View", true)
+    </div>
+
+}("Details", true)

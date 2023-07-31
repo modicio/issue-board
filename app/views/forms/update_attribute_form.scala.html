@@ -32,8 +32,8 @@
         @CSRF.formField
         @message_box_error(msg)
         <div class="flex-container horizontal full-width stretched">
-            <div class="col-3">[@propertyRule.datatype]</div>
-            <input class="weight-2" type="text" name="newValue" placeholder="Attribute Value" value="@data.value"/>
+            <!--<div class="col-3">[@propertyRule.datatype]</div>-->
+            <input class="weight-2" type="text" name="newValue" value="@data.value"/>
             <button class="btn btn-solid-prim btn-small">Update</button>
         </div>
     }

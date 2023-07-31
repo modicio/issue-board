@@ -51,7 +51,7 @@
                     <div class="flex-container full-width stretched horizontal m-t-mini">
                         <div class="m-r-mini bg-lg p-l-mini p-r-mini">@instance.getTypeHandle.getTypeName</div>
                         <div class="weight-2"><b>@instance.deepValue("Title").getOrElse("[untitled]")</b></div>
-                        <div class="m-l-small m-r-mini input-medium">@instance.getTypeHandle.getTypeIdentity.takeRight(5)</div>
+                        <!--<div class="m-l-small m-r-mini input-medium">@instance.getTypeHandle.getTypeIdentity.takeRight(5)</div>-->
                     </div>
 
                     <div class="flex-container full-width stretched horizontal m-t-small">
@@ -64,10 +64,7 @@
 
                 </div>
             </div>
-
         }
-
-
 }
     </div>
 
@@ -75,7 +72,7 @@
         <div class="m-t-medium">
         @helper.form(action = routes.IssueController.addIssue(selected)) {
             @CSRF.formField
-            <button class="btn btn-medium btn-bordered-sec">New Instance</button>
+            <button class="btn btn-medium btn-bordered-sec">New</button>
         }
         </div>
     }
